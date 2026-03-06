@@ -12,9 +12,14 @@
             <p>{{ product.description }}</p>
             <strong>Ksh {{ product.price }}</strong>
             <hr>
+            <a href="{{ url_for('main.add_to_cart', product_id=product.id) }}">
+Add To Cart
+</a>
+<hr><br>
         </div>
     {% endfor %}
 
-    <a href="{{ url_for('main.add_product') }}">Add Product</a>
+    <a href="{{ url_for('main.add_product') }}">Add Product</a><hr><br>
+    
 </body>
 </html>

@@ -1,3 +1,5 @@
+from pdb import main
+
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from ..models import User
@@ -49,6 +51,8 @@ def login():
         return redirect(url_for("auth.login"))
 
     return render_template("login.html")
+
+
 
 
 @auth.route("/logout")

@@ -3,14 +3,44 @@
 document.addEventListener('DOMContentLoaded', function() {
     const registerForm = document.getElementById('registerForm');
     const password = document.getElementById('password');
-    const confirmPassword = document.getElementById('confirm_password');
     const username = document.getElementById('username');
+    const registerBtn = document.getElementById('registerBtn');
+    
+    // Create utils object if it doesn't exist
+    window.utils = window.utils || {
+        showLoading: function(btn) {
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = 'Registering...';
+            }
+        },
+        hideLoading: function(btn) {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = 'Register';
+            }
+        },
+        showError: function(input, message) {
+            const feedback = input.nextElementSibling;
+            if (feedback && feedback.classList.contains('validation-feedback')) {
+                feedback.textContent = message;
+                feedback.classList.add('error');
+            }
+        },
+        clearErrors: function(form) {
+            const errors = form.querySelectorAll('.validation-feedback.error');
+            errors.forEach(error => {
+                error.textContent = '';
+                error.classList.remove('error');
+            });
+        }
+    };
 
     // Real-time validation
     if (username) {
-        username.addEventListener('input', utils.debounce(function() {
+        username.addEventListener('input', function() {
             validateUsername(this.value);
-        }, 500));
+        });
     }
 
     if (password) {
@@ -19,51 +49,63 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    if (confirmPassword) {
-        confirmPassword.addEventListener('input', function() {
-            validatePasswordMatch();
-        });
-    }
-
     // Form submission
     if (registerForm) {
         registerForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            // Clear previous errors
+            // Clear previous errors and tips
             utils.clearErrors(registerForm);
+            clearPasswordTips();
+            
+            // Get values
+            const usernameValue = username.value.trim();
+            const passwordValue = password.value;
             
             // Validate all fields
-            const isUsernameValid = validateUsername(username.value);
-            const isPasswordValid = validatePassword(password.value);
-            const doPasswordsMatch = validatePasswordMatch();
+            const isUsernameValid = validateUsername(usernameValue);
+            const isPasswordValid = validatePassword(passwordValue);
             
-            if (isUsernameValid && isPasswordValid && doPasswordsMatch) {
-                const submitBtn = registerForm.querySelector('button[type="submit"]');
-                utils.showLoading(submitBtn);
-                
-                try {
-                    // Form will submit normally
-                    registerForm.submit();
-                } catch (error) {
-                    utils.hideLoading(submitBtn);
-                    console.error('Registration error:', error);
-                }
+            // Only prevent submission if validation fails
+            if (!isUsernameValid || !isPasswordValid) {
+                e.preventDefault();
+                return false;
             }
+            
+            // Show loading state
+            if (registerBtn) {
+                utils.showLoading(registerBtn);
+            }
+            
+            // Form will submit normally - don't call registerForm.submit() here
+            // Just let the natural form submission happen
         });
+    }
+
+    // Helper function to clear password tips
+    function clearPasswordTips() {
+        const tipsContainer = document.getElementById('passwordTips');
+        if (tipsContainer) {
+            tipsContainer.innerHTML = '';
+        }
     }
 
     // Validation functions
     function validateUsername(value) {
         const usernameRegex = /^[a-zA-Z0-9_]+$/;
+        const usernameFeedback = document.getElementById('username-feedback');
         
         if (value.length < 3) {
-            utils.showError(username, 'Username must be at least 3 characters long');
+            if (usernameFeedback) {
+                usernameFeedback.textContent = 'Username must be at least 3 characters long';
+                usernameFeedback.classList.add('error');
+            }
             return false;
         }
         
         if (!usernameRegex.test(value)) {
-            utils.showError(username, 'Username can only contain letters, numbers, and underscores');
+            if (usernameFeedback) {
+                usernameFeedback.textContent = 'Username can only contain letters, numbers, and underscores';
+                usernameFeedback.classList.add('error');
+            }
             return false;
         }
         
@@ -71,32 +113,33 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function validatePassword(value) {
+        const passwordFeedback = document.getElementById('password-feedback');
+        const tipsContainer = document.getElementById('passwordTips');
+        
+        // Clear previous tips
+        clearPasswordTips();
+        
         if (value.length < 6) {
-            utils.showError(password, 'Password must be at least 6 characters long');
+            if (passwordFeedback) {
+                passwordFeedback.textContent = 'Password must be at least 6 characters long';
+                passwordFeedback.classList.add('error');
+            }
             return false;
         }
         
-        // Check for password strength (optional)
+        // Check for password strength
         const hasUpperCase = /[A-Z]/.test(value);
         const hasLowerCase = /[a-z]/.test(value);
         const hasNumbers = /\d/.test(value);
         
-        if (!(hasUpperCase && hasLowerCase && hasNumbers)) {
-            // Show warning but don't block submission
-            const warningDiv = document.createElement('div');
-            warningDiv.className = 'validation-warning';
-            warningDiv.textContent = 'Tip: Use uppercase, lowercase, and numbers for a stronger password';
-            password.parentNode.appendChild(warningDiv);
+        if (!(hasUpperCase && hasLowerCase && hasNumbers) && tipsContainer) {
+            // Create tip element instead of multiple divs
+            const tip = document.createElement('div');
+            tip.className = 'tip';
+            tip.textContent = '💡 Tip: Use uppercase, lowercase, and numbers for a stronger password';
+            tipsContainer.appendChild(tip);
         }
         
-        return true;
-    }
-
-    function validatePasswordMatch() {
-        if (password.value !== confirmPassword.value) {
-            utils.showError(confirmPassword, 'Passwords do not match');
-            return false;
-        }
         return true;
     }
 });

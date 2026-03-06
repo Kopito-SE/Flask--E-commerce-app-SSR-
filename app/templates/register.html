@@ -7,20 +7,27 @@
     <div class="auth-card">
         <h2 class="auth-title">Create Account</h2>
         
-        <form method="POST" action="{{ url_for('auth.register') }}" class="auth-form" id="registerForm">
-            <input type="text" style="display:none" aria-hidden="true">
-            <input type="password" style="display:none" aria-hidden="true">
+        <!-- Removed the hidden inputs that were causing issues -->
+        <form method="POST" action="{{ url_for('auth.register') }}" class="auth-form" id="registerForm" novalidate>
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" name="username" class="form-control" required>
+                <input type="text" id="username" name="username" class="form-control" 
+                       placeholder="Enter your username" required autocomplete="off">
+                <div class="validation-feedback" id="username-feedback"></div>
             </div>
             
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" class="form-control" required>
+                <input type="password" id="password" name="password" class="form-control" 
+                       placeholder="Enter your password" required autocomplete="new-password">
+                <div class="password-requirements">
+                    <small>Password must be at least 6 characters long</small>
+                </div>
+                <div class="validation-feedback" id="password-feedback"></div>
+                <div class="password-tips-container" id="passwordTips"></div>
             </div>
             
-            <button type="submit" class="btn btn-primary btn-block">Register</button>
+            <button type="submit" class="btn btn-primary btn-block" id="registerBtn">Register</button>
         </form>
         
         <div class="auth-footer">
@@ -28,6 +35,45 @@
         </div>
     </div>
 </div>
+
+<style>
+    .validation-feedback {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+    .validation-feedback.error {
+        color: #dc3545;
+    }
+    .password-tips-container {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-top: 0.25rem;
+    }
+    .password-tips-container .tip {
+        margin-bottom: 0.25rem;
+    }
+    .password-requirements {
+        font-size: 0.75rem;
+        color: #6c757d;
+        margin-top: 0.25rem;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+    .btn-primary:disabled {
+        background-color: #6c757d;
+        cursor: not-allowed;
+    }
+</style>
 {% endblock %}
 
 {% block extra_js %}

@@ -1,5 +1,5 @@
 from flask import Blueprint, session, redirect, url_for, flash, render_template, request
-from ..models import User, Product
+from ..models import CartItem, User, Product
 from .. import db
 
 main = Blueprint("main", __name__)
@@ -52,3 +52,34 @@ def add_product():
         return redirect(url_for("main.home"))
 
     return render_template("add_product.html")
+@main.route("/add-to-cart/<int:product_id>")
+def add_to_cart(product_id):
+    if "user_id" not in session:
+        flash("Please Login First")
+        return redirect(url_for("auth.login"))
+    user_id = session["user_id"]
+    item = CartItem.query.filter_by(
+            user_id=user_id, 
+            product_id=product_id
+    ).first()
+
+    if item:
+        item.quantity += 1
+    else:
+        item = CartItem(
+            user_id=user_id,
+            product_id=product_id,
+            quantity= 1
+        )
+        db.session.add(item)
+    db.session.commit()
+    flash("Product added to cart!")
+    return redirect(url_for("main.home"))
+@main.route("/cart")
+def view_cart():
+    if "user_id" not in session:
+        flash("Please login first")
+        return redirect(url_for("auth.login"))
+    user_id = session["user_id"]
+    cart_items = CartItem.query.filter_by(user_id=user_id).all()
+    return render_template("cart.html", cart_items=cart_items)
