@@ -8,6 +8,9 @@
 
     {% for product in products %}
         <div>
+            {% if product.image %}
+                <img src="{{ url_for('static', filename='uploads/' ~ product.image) }}" alt="{{ product.name }}" width="200"><br>
+            {% endif %}
             <h3>{{ product.name }}</h3>
             <p>{{ product.description }}</p>
             <strong>Ksh {{ product.price }}</strong>
@@ -20,6 +23,6 @@ Add To Cart
     {% endfor %}
 
     <a href="{{ url_for('main.add_product') }}">Add Product</a><hr><br>
-    
+
 </body>
 </html>
