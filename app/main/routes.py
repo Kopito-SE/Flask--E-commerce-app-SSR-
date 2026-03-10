@@ -1,10 +1,12 @@
+import decimal
 import os
 
 from flask import Blueprint, current_app, flash, redirect, render_template, request, session, url_for
 from werkzeug.utils import secure_filename
 
 from .. import db
-from ..models import CartItem, CustomerOrder, OrderItem, Product, User
+from ..models import CartItem, Category, CustomerOrder, OrderItem, Product, User, Category
+
 
 main = Blueprint("main", __name__)
 
@@ -37,15 +39,23 @@ def add_product():
     if user.role != "admin":
         flash("Admin access required")
         return redirect(url_for("main.home"))
-
+    
+     # Get all categories for the dropdown (for both GET and POST requests)
+    categories = Category.query.all()
     if request.method == "POST":
         name = request.form.get("name")
         price = request.form.get("price")
         description = request.form.get("description")
         file = request.files.get("image")
+        category_id = request.form.get("category_id")# Get category from form
 
         if not name or not price:
             flash("Name and Price are required!")
+            return redirect(url_for("main.add_product"))
+        
+        # Validate category_id
+        if not category_id:
+            flash("Please select a category!")
             return redirect(url_for("main.add_product"))
 
         filename = None
@@ -72,11 +82,13 @@ def add_product():
             flash("Price must be a valid number!")
             return redirect(url_for("main.add_product"))
 
+        # Create product with category_id
         new_product = Product(
             name=name,
-            price=price_float,
+            price=float(price),
             description=description,
             image=filename,
+            category_id=int(category_id)
         )
 
         try:
@@ -88,8 +100,9 @@ def add_product():
             db.session.rollback()
             flash(f"Error saving to database: {str(e)}")
             return redirect(url_for("main.add_product"))
-
-    return render_template("add_product.html")
+    
+    # Pass categories to template for GET request
+    return render_template("add_product.html", categories=categories)
 
 
 @main.route("/add-to-cart/<int:product_id>")
@@ -156,3 +169,9 @@ def orders():
     user_id = session["user_id"]
     orders = CustomerOrder.query.filter_by(user_id=user_id).all()
     return render_template("orders.html", orders=orders)
+
+@main.route("/category/<int:category_id>")
+def category_view(category_id):
+    category = Category.query.get_or_404(category_id)
+    products = Product.query.filter_by(category_id=category.id).all()
+    return render_template("category.html", category=category, products=products)

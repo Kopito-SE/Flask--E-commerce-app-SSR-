@@ -1,11 +1,18 @@
 from . import db
 
 class User(db.Model):
+    __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
 
     role = db.Column(db.String(20), default= "user")
+
+class Category(db.Model):
+    __tablename__ = 'category'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), unique=True, nullable=False)
+    products = db.relationship("Product", backref="category", lazy=True)
 
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -14,6 +21,7 @@ class Product(db.Model):
     description = db.Column(db.Text, nullable=True)
     
     image = db.Column(db.String(200), nullable=True)
+    category_id = db.Column(db.Integer, db.ForeignKey("category.id"), nullable=True)
 
     def __repr__(self):
         return f"<product {self.name}>"
@@ -41,3 +49,4 @@ class OrderItem(db.Model):
     quantity = db.Column(db.Integer, nullable=False)
 
     product = db.relationship("Product")
+

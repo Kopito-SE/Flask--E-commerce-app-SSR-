@@ -1,0 +1,27 @@
+<h2>Category: {{ category.name }}</h2>
+
+{% for product in products %}
+
+<div>
+
+<h3>{{ product.name }}</h3>
+
+{% if product.image %}
+<img src="{{ url_for('static', filename='uploads/' + product.image) }}" width="200">
+{% endif %}
+
+<p>{{ product.description }}</p>
+
+<strong>Ksh {{ product.price }}</strong>
+
+<br><br>
+
+<a href="{{ url_for('main.add_to_cart', product_id=product.id) }}">
+Add To Cart
+</a>
+
+<hr>
+
+</div>
+
+{% endfor %}

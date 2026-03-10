@@ -13,5 +13,12 @@
         <input type="file" name="image" accept="image/*"><br><br>
         <button type="submit">Add Product</button>
     </form>
+    <select name="category_id" required>
+    <option value="">Select Category</option>
+    {% for cat in categories %}
+    <option value="{{ cat.id }}">{{ cat.name }}</option>
+    {% endfor %}
+    </select>
+    <br><br>
 </body>
 </html>
