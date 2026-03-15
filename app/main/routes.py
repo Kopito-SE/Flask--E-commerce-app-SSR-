@@ -1,4 +1,4 @@
-import os
+﻿import os
 
 from flask import Blueprint, current_app, flash, redirect, render_template, request, session, url_for
 from werkzeug.utils import secure_filename
@@ -125,8 +125,37 @@ def view_cart():
         return redirect(url_for("auth.login"))
     user_id = session["user_id"]
     cart_items = CartItem.query.filter_by(user_id=user_id).all()
-    return render_template("cart.html", cart_items=cart_items)
+    total = sum(item.product.price * item.quantity for item in cart_items)
+    return render_template("cart.html", cart_items=cart_items,total=total)
 
+@main.route('/update-cart', methods=['GET', 'POST'])
+def update_cart():
+    try:
+        data = request.get_json()
+        item_id = data.get('item_id')
+        action = data.get('action')
+        
+        cart_item = CartItem.query.get_or_404(item_id)
+        
+        if cart_item.user_id != current_user.id:
+            return jsonify({'success': False, 'error': 'Unauthorized'}), 403
+        
+        if action == 'increase':
+            cart_item.quantity += 1
+        elif action == 'decrease':
+            if cart_item.quantity > 1:
+                cart_item.quantity -= 1
+            else:
+                db.session.delete(cart_item)
+                db.session.commit()
+                return jsonify({'success': True, 'removed': True})
+        
+        db.session.commit()
+        return jsonify({'success': True})
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @main.route("/checkout")
 def checkout():

@@ -1,6 +1,199 @@
-<h2>Add new Category</h2>
-<form method = "POST">
-    <input type = "text" name = "name" placeholder="Category Name" required>
-    <br><br>
-    <button type = "submit">Add Category</button>
-</form>
+<style>
+    /* Modern CSS Reset */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .category-container {
+        max-width: 500px;
+        margin: 3rem auto;
+        padding: 2rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .category-form {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-title {
+        color: #333;
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        text-align: center;
+        position: relative;
+        padding-bottom: 0.5rem;
+    }
+
+    .form-title:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 2px;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 1rem 1.2rem;
+        font-size: 1rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        outline: none;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+    }
+
+    .form-input:focus {
+        border-color: #667eea;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-input::placeholder {
+        color: #999;
+        font-style: italic;
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 1rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .submit-btn:active {
+        transform: translateY(0);
+    }
+
+    .submit-btn:before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .submit-btn:hover:before {
+        width: 300px;
+        height: 300px;
+    }
+
+    /* Optional: Add a subtle animation on page load */
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .category-form {
+        animation: slideUp 0.5s ease-out;
+    }
+
+    /* Optional: Add icons or additional styling */
+    .input-icon {
+        position: relative;
+    }
+
+    .input-icon i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #999;
+    }
+
+    .input-icon .form-input {
+        padding-left: 2.8rem;
+    }
+
+    /* Responsive design */
+    @media (max-width: 600px) {
+        .category-container {
+            margin: 1rem;
+            padding: 1rem;
+        }
+        
+        .category-form {
+            padding: 1.5rem;
+        }
+        
+        .form-title {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
+<div class="category-container">
+    <div class="category-form">
+        <h2 class="form-title">Add New Category</h2>
+        
+        <form method="POST">
+            <div class="form-group">
+                <!-- Version 1: Simple input -->
+                <input type="text" 
+                       name="name" 
+                       class="form-input" 
+                       placeholder="Enter category name" 
+                       required>
+                
+                <!-- Version 2: Input with icon (uncomment to use) -->
+                <!-- <div class="input-icon">
+                    <i class="fas fa-tag"></i>
+                    <input type="text" 
+                           name="name" 
+                           class="form-input" 
+                           placeholder="Enter category name" 
+                           required>
+                </div> -->
+            </div>
+            
+            <button type="submit" class="submit-btn">
+                Add Category
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- If using the icon version, add Font Awesome in your base template or here -->
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> -->

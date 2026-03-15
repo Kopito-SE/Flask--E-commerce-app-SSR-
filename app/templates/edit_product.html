@@ -1,21 +1,217 @@
-<h2>Edit Product</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<form method="POST" enctype="multipart/form-data">
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
 
-<input type="text" name="name" value="{{ product.name }}" placeholder="Product Name"><br><br>
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            animation: slideUp 0.5s ease;
+        }
 
-<input type="number" step="0.01" name="price" value="{{ product.price }}" placeholder="Price"><br><br>
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-<textarea name="description" placeholder="Description">{{ product.description }}</textarea><br><br>
+        h2 {
+            color: #333;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+        }
 
-<select name="category_id">
-    {% for cat in categories %}
-    <option value="{{ cat.id }}" {% if product.category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
-    {% endfor %}
-</select><br><br>
+        h2:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
 
-<input type="file" name="image"><br><br>
+        .form-group {
+            margin-bottom: 20px;
+        }
 
-<button type="submit">Update Product</button>
+        input, textarea, select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
 
-</form>
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input:hover, textarea:hover, select:hover {
+            border-color: #b8b8b8;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 16px;
+        }
+
+        input[type="file"] {
+            padding: 10px;
+            background: #f8f9fa;
+            border: 2px dashed #667eea;
+            cursor: pointer;
+        }
+
+        input[type="file"]:hover {
+            background: #eef2ff;
+        }
+
+        input[type="file"]::file-selector-button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            margin-right: 15px;
+            transition: opacity 0.3s ease;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            opacity: 0.9;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .current-image {
+            margin: 15px 0;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .current-image i {
+            color: #667eea;
+        }
+
+        ::placeholder {
+            color: #aaa;
+            opacity: 1;
+        }
+    </style>
+    <!-- Font Awesome for icons (optional) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <h2>✏️ Edit Product</h2>
+        
+        <form method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <input type="text" name="name" value="{{ product.name }}" placeholder="Product Name" required>
+            </div>
+            
+            <div class="form-group">
+                <input type="number" step="0.01" name="price" value="{{ product.price }}" placeholder="Price" required>
+            </div>
+            
+            <div class="form-group">
+                <textarea name="description" placeholder="Product Description">{{ product.description }}</textarea>
+            </div>
+            
+            <div class="form-group">
+                <select name="category_id" required>
+                    <option value="" disabled>Select a category</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat.id }}" {% if product.category_id == cat.id %}selected{% endif %}>
+                        {{ cat.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <input type="file" name="image" accept="image/*">
+            </div>
+            
+            <button type="submit">
+                <i class="fas fa-save" style="margin-right: 8px;"></i>
+                Update Product
+            </button>
+        </form>
+    </div>
+</body>
+</html>

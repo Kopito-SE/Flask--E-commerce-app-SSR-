@@ -1,23 +1,345 @@
-<h2>Update Order Status</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Order Status</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<h3>Order #{{ order.id }}</h3>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #2980b9 0%, #2c3e50 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
 
-<form method="POST">
+        .container {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            animation: slideIn 0.5s ease-out;
+        }
 
-<select name="status">
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-<option value="Pending">Pending</option>
+        h2 {
+            color: #2c3e50;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-<option value="Processing">Processing</option>
+        h2 i {
+            color: #3498db;
+        }
 
-<option value="Shipped">Shipped</option>
+        .order-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            animation: pulse 2s infinite;
+        }
 
-<option value="Delivered">Delivered</option>
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            }
+            50% {
+                box-shadow: 0 5px 25px rgba(102, 126, 234, 0.6);
+            }
+            100% {
+                box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            }
+        }
 
-</select>
+        .current-status {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 25px;
+            border-left: 4px solid #3498db;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-<br><br>
+        .current-status span {
+            color: #7f8c8d;
+            font-size: 15px;
+        }
 
-<button type="submit">Update</button>
+        .current-status strong {
+            color: #2c3e50;
+            font-size: 16px;
+            background: white;
+            padding: 4px 12px;
+            border-radius: 50px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
 
-</form>
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #34495e;
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        select {
+            width: 100%;
+            padding: 15px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            color: #2c3e50;
+            background: white;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233498db' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 18px center;
+            background-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        select:hover {
+            border-color: #b0b0b0;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.15);
+        }
+
+        select option {
+            padding: 12px;
+            font-size: 16px;
+        }
+
+        /* Status colors for dropdown */
+        select option[value="Pending"] {
+            color: #f39c12;
+        }
+        
+        select option[value="Processing"] {
+            color: #3498db;
+        }
+        
+        select option[value="Shipped"] {
+            color: #9b59b6;
+        }
+        
+        select option[value="Delivered"] {
+            color: #27ae60;
+        }
+
+        .status-timeline {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .status-timeline:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e0e0e0;
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+
+        .timeline-step {
+            position: relative;
+            z-index: 2;
+            background: white;
+            padding: 0 5px;
+            text-align: center;
+        }
+
+        .step-dot {
+            width: 12px;
+            height: 12px;
+            background: #e0e0e0;
+            border: 2px solid white;
+            border-radius: 50%;
+            margin: 0 auto 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .step-label {
+            font-size: 12px;
+            color: #95a5a6;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.5s, height 0.5s;
+        }
+
+        button:hover:before {
+            width: 300px;
+            height: 300px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(52, 152, 219, 0.4);
+        }
+
+        button:active {
+            transform: translateY(-1px);
+        }
+
+        .info-message {
+            text-align: center;
+            margin-top: 20px;
+            color: #7f8c8d;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .info-message i {
+            color: #3498db;
+        }
+    </style>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <h2>
+            <i class="fas fa-truck"></i>
+            Update Order Status
+        </h2>
+        
+        <div class="order-badge">
+            <i class="fas fa-hashtag" style="margin-right: 5px;"></i>
+            Order #{{ order.id }}
+        </div>
+
+        <div class="current-status">
+            <i class="fas fa-info-circle" style="color: #3498db; font-size: 18px;"></i>
+            <span>Current Status:</span>
+            <strong>{{ order.status }}</strong>
+        </div>
+
+        <form method="POST">
+            <div class="form-group">
+                <label>
+                    <i class="fas fa-edit" style="margin-right: 5px; color: #3498db;"></i>
+                    Select New Status
+                </label>
+                <select name="status" required>
+                    <option value="" disabled selected>Choose status...</option>
+                    <option value="Pending">⏳ Pending</option>
+                    <option value="Processing">⚙️ Processing</option>
+                    <option value="Shipped">📦 Shipped</option>
+                    <option value="Delivered">✅ Delivered</option>
+                </select>
+            </div>
+
+            <!-- Visual status timeline -->
+            <div class="status-timeline">
+                <div class="timeline-step">
+                    <div class="step-dot"></div>
+                    <div class="step-label">Pending</div>
+                </div>
+                <div class="timeline-step">
+                    <div class="step-dot"></div>
+                    <div class="step-label">Processing</div>
+                </div>
+                <div class="timeline-step">
+                    <div class="step-dot"></div>
+                    <div class="step-label">Shipped</div>
+                </div>
+                <div class="timeline-step">
+                    <div class="step-dot"></div>
+                    <div class="step-label">Delivered</div>
+                </div>
+            </div>
+
+            <button type="submit">
+                <i class="fas fa-sync-alt"></i>
+                Update Status
+            </button>
+
+            <div class="info-message">
+                <i class="fas fa-clock"></i>
+                Status updates are tracked for order history
+            </div>
+        </form>
+    </div>
+</body>
+</html>

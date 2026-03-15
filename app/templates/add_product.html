@@ -1,27 +1,409 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Add Product</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product - Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .product-container {
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .product-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .product-header h2 {
+            color: white;
+            font-size: 2.2rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .product-header p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .product-form {
+            padding: 2.5rem;
+            background: white;
+        }
+
+        .form-group {
+            margin-bottom: 1.8rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            font-size: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            outline: none;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: #999;
+            font-style: italic;
+        }
+
+        select.form-control {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1rem;
+            padding-right: 2.5rem;
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 1rem;
+            background: #f0f0f0;
+            border: 2px dashed #999;
+            border-radius: 12px;
+            color: #666;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .file-input-wrapper:hover .file-input-button {
+            background: #e8e8e8;
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .file-name {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .file-name i {
+            color: #28a745;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1.2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .submit-btn:hover:before {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* Grid layout for two columns */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+            
+            .product-header h2 {
+                font-size: 1.8rem;
+            }
+            
+            .product-form {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Optional: Add icons using Font Awesome */
+        .input-icon {
+            position: relative;
+        }
+
+        .input-icon i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            z-index: 1;
+        }
+
+        .input-icon .form-control {
+            padding-left: 2.8rem;
+        }
+
+        /* Success/Error states */
+        .form-control.error {
+            border-color: #dc3545;
+        }
+
+        .form-control.success {
+            border-color: #28a745;
+        }
+    </style>
+    <!-- Add Font Awesome for icons (optional) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <h2>Add Product</h2>
-    
-    <form method="POST" enctype="multipart/form-data">
-        <!-- Move the select INSIDE the form -->
-        <select name="category_id" required>
-            <option value="">Select Category</option>
-            {% for cat in categories %}
-            <option value="{{ cat.id }}">{{ cat.name }}</option>
-            {% endfor %}
-        </select>
-        <br><br>
+    <div class="product-container">
+        <div class="product-header">
+            <h2>Add New Product</h2>
+            <p>Fill in the product details below</p>
+        </div>
         
-        <input type="text" name="name" placeholder="Product Name"><br><br>
-        <input type="number" step="0.01" name="price" placeholder="Price"><br><br>
-        <textarea name="description" placeholder="Description"></textarea><br><br>
-        <input type="file" name="image" accept="image/*"><br><br>
-        <button type="submit">Add Product</button>
-    </form>
-    
+        <div class="product-form">
+            <form method="POST" enctype="multipart/form-data">
+                <!-- Category Selection -->
+                <div class="form-group">
+                    <label class="form-label" for="category">
+                        <i class="fas fa-tag"></i> Category
+                    </label>
+                    <select name="category_id" id="category" class="form-control" required>
+                        <option value="" disabled selected>Select a category</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat.id }}">{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Product Name and Price in grid -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="name">
+                            <i class="fas fa-box"></i> Product Name
+                        </label>
+                        <div class="input-icon">
+                            <i class="fas fa-box"></i>
+                            <input type="text" 
+                                   name="name" 
+                                   id="name"
+                                   class="form-control" 
+                                   placeholder="e.g., Wireless Headphones"
+                                   required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="price">
+                            <i class="fas fa-dollar-sign"></i> Price ($)
+                        </label>
+                        <div class="input-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                            <input type="number" 
+                                   name="price" 
+                                   id="price"
+                                   step="0.01" 
+                                   min="0"
+                                   class="form-control" 
+                                   placeholder="0.00"
+                                   required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="form-group">
+                    <label class="form-label" for="description">
+                        <i class="fas fa-align-left"></i> Description
+                    </label>
+                    <textarea name="description" 
+                              id="description"
+                              class="form-control" 
+                              placeholder="Enter product description here..."></textarea>
+                </div>
+
+                <!-- Image Upload -->
+                <div class="form-group">
+                    <label class="form-label" for="image">
+                        <i class="fas fa-image"></i> Product Image
+                    </label>
+                    <div class="file-input-wrapper">
+                        <div class="file-input-button">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Choose an image</span>
+                        </div>
+                        <input type="file" 
+                               name="image" 
+                               id="image"
+                               accept="image/*"
+                               onchange="updateFileName(this)">
+                    </div>
+                    <div class="file-name" id="file-name-display">
+                        <i class="fas fa-info-circle"></i>
+                        <span>No file chosen</span>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-plus-circle"></i> Add Product
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Update filename when file is selected
+        function updateFileName(input) {
+            const fileNameDisplay = document.getElementById('file-name-display');
+            const fileNameSpan = fileNameDisplay.querySelector('span');
+            
+            if (input.files && input.files.length > 0) {
+                const fileName = input.files[0].name;
+                fileNameSpan.textContent = fileName;
+                fileNameDisplay.innerHTML = '<i class="fas fa-check-circle" style="color: #28a745;"></i> <span>' + fileName + '</span>';
+            } else {
+                fileNameSpan.textContent = 'No file chosen';
+                fileNameDisplay.innerHTML = '<i class="fas fa-info-circle"></i> <span>No file chosen</span>';
+            }
+        }
+
+        // Optional: Add form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const requiredFields = document.querySelectorAll('[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value) {
+                    field.classList.add('error');
+                    isValid = false;
+                    
+                    // Remove error class on input
+                    field.addEventListener('input', function() {
+                        this.classList.remove('error');
+                    });
+                }
+            });
+            
+            if (!isValid) {
+                e.preventDefault();
+                alert('Please fill in all required fields');
+            }
+        });
+    </script>
 </body>
 </html>

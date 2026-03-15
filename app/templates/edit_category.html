@@ -1,5 +1,74 @@
-<h2>Edit Category</h2>
+<style>
+.edit-container{
+    max-width:500px;
+    margin:80px auto;
+    padding:40px;
+    background:white;
+    border-radius:12px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.1);
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+.edit-title{
+    font-size:1.8rem;
+    font-weight:700;
+    margin-bottom:25px;
+    text-align:center;
+    color:#333;
+}
+
+.form-group{
+    margin-bottom:20px;
+}
+
+.form-group input{
+    width:100%;
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    font-size:1rem;
+    transition:0.3s;
+}
+
+.form-group input:focus{
+    outline:none;
+    border-color:#667eea;
+    box-shadow:0 0 5px rgba(102,126,234,0.4);
+}
+
+.update-btn{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    background:#667eea;
+    color:white;
+    font-size:1rem;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.update-btn:hover{
+    background:#5563d6;
+}
+</style>
+
+
+<div class="edit-container">
+
+<h2 class="edit-title">Edit Category</h2>
+
 <form method="POST">
-    <input type="text" name="name" value="{{ category.name }}"required><br><br>
-    <button type="submit">Update Category</button>
+
+<div class="form-group">
+<input type="text" name="name" value="{{ category.name }}" required>
+</div>
+
+<button type="submit" class="update-btn">
+Update Category
+</button>
+
 </form>
+
+</div>

@@ -46,4 +46,15 @@ def create_app():
     app.register_blueprint(auth)
     app.register_blueprint(main)
 
+    @app.context_processor
+    def inject_user():
+        from .models import User
+        from flask import session
+
+        user = None
+
+        if "user_id" in session:
+            user = User.query.get(session["user_id"])
+        return dict(current_user=user)
+
     return app

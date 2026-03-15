@@ -1,20 +1,386 @@
-<h2>Your Cart</h2>
+{% extends "base1.html" %}
 
-{% for item in cart_items %}
+{% block title %}Your Cart - Eagle Web Store{% endblock %}
 
-<div>
+{% block extra_css %}
+<style>
+    /* Cart page specific styles - keep all your existing styles */
+    .cart-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+    
+    .cart-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        margin-bottom: 40px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .cart-header h2 {
+        margin: 0;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 2.5rem;
+        letter-spacing: -0.5px;
+    }
+    
+    .cart-items-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+    
+    .cart-item-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .cart-item-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 45px rgba(0, 0, 0, 0.25);
+        background: white;
+    }
+    
+    .cart-item-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 15px;
+        border-bottom: 2px solid rgba(102, 126, 234, 0.2);
+        padding-bottom: 10px;
+    }
+    
+    .cart-item-detail {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 12px;
+    }
+    
+    .cart-item-label {
+        font-weight: 600;
+        color: #6b7280;
+        font-size: 1.1rem;
+    }
+    
+    .cart-item-value {
+        font-size: 1.3rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .quantity-control {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        background: white;
+        padding: 8px 15px;
+        border-radius: 30px;
+        border: 1px solid rgba(102, 126, 234, 0.3);
+    }
+    
+    .quantity-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .quantity-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .quantity-display {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #1f2937;
+        min-width: 40px;
+        text-align: center;
+    }
+    
+    .cart-summary {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        margin-top: 30px;
+    }
+    
+    .summary-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 20px;
+    }
+    
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .summary-row.total {
+        border-bottom: none;
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-top: 15px;
+    }
+    
+    .checkout-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 18px 40px;
+        border-radius: 15px;
+        font-weight: 700;
+        font-size: 1.3rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        transition: all 0.3s ease;
+        width: 100%;
+        margin-top: 20px;
+        cursor: pointer;
+    }
+    
+    .checkout-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 20px 40px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+    
+    .checkout-btn i {
+        font-size: 1.4rem;
+    }
+    
+    .empty-cart {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 80px 40px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        grid-column: 1 / -1;
+    }
+    
+    .empty-cart i {
+        font-size: 5rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 25px;
+    }
+    
+    .empty-cart p {
+        font-size: 1.5rem;
+        color: #6b7280;
+        margin-bottom: 30px;
+    }
+    
+    .continue-shopping {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px 40px;
+        border-radius: 15px;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-block;
+        transition: all 0.3s ease;
+    }
+    
+    .continue-shopping:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+    
+    /* Animation */
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .cart-item-card {
+        animation: slideIn 0.5s ease forwards;
+        opacity: 0;
+    }
+    
+    .cart-item-card:nth-child(1) { animation-delay: 0.1s; }
+    .cart-item-card:nth-child(2) { animation-delay: 0.2s; }
+    .cart-item-card:nth-child(3) { animation-delay: 0.3s; }
+    .cart-item-card:nth-child(4) { animation-delay: 0.4s; }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .cart-header h2 {
+            font-size: 2rem;
+        }
+        
+        .cart-items-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .cart-item-detail {
+            flex-direction: column;
+            gap: 10px;
+            text-align: center;
+        }
+        
+        .summary-row {
+            flex-direction: column;
+            gap: 10px;
+            text-align: center;
+        }
+    }
+</style>
+{% endblock %}
 
-<h3>{{ item.product.name }}</h3>
+{% block content %}
+<div class="cart-container">
+    <!-- Cart Header -->
+    <div class="cart-header">
+        <h2>
+            <i class="fas fa-shopping-cart me-2"></i>
+            Your Shopping Cart
+        </h2>
+    </div>
 
-<p>Price: {{ item.product.price }}</p>
-
-<p>Quantity: {{ item.quantity }}</p>
-<a href = "{{url_for('main.checkout')}}">
-    <button>Checkout</button>
-</a>
-
-<hr>
-
-</div>
-
+    <!-- Cart Items -->
+    {% if cart_items and cart_items|length > 0 %}
+        <div class="cart-items-grid">
+            {% for item in cart_items %}
+    <div class="cart-item-card">
+        <h3 class="cart-item-title">{{ item.product.name }}</h3>
+        
+        <div class="cart-item-detail">
+            <span class="cart-item-label">Price:</span>
+            <span class="cart-item-value">Ksh {{ item.product.price }}</span>
+        </div>
+        
+        <div class="cart-item-detail">
+            <span class="cart-item-label">Quantity:</span>
+            <div class="quantity-control">
+                <button class="quantity-btn" onclick="updateQuantity({{ item.id }}, 'decrease')">-</button>
+                <span class="quantity-display">{{ item.quantity }}</span>
+                <button class="quantity-btn" onclick="updateQuantity({{ item.id }}, 'increase')">+</button>
+            </div>
+        </div>
+        
+        <div class="cart-item-detail">
+            <span class="cart-item-label">Subtotal:</span>
+            <span class="cart-item-value">Ksh {{ item.product.price * item.quantity }}</span>
+        </div>
+    </div>
 {% endfor %}
+        </div>
+
+        <!-- Cart Summary - FIXED TOTAL CALCULATION -->
+        <div class="cart-summary">
+            <h3 class="summary-title">Order Summary</h3>
+            
+            {# Calculate total using a namespace variable #}
+            {% set ns = namespace(total=0) %}
+            {% for item in cart_items %}
+                {% set ns.total = ns.total + (item.product.price * item.quantity) %}
+                <div class="summary-row">
+                    <span>{{ item.product.name }} (x{{ item.quantity }})</span>
+                    <span>Ksh {{ item.product.price * item.quantity }}</span>
+                </div>
+            {% endfor %}
+            
+            <div class="summary-row total">
+                <span>Total:</span>
+                <span class="cart-item-value">Ksh {{ ns.total }}</span>
+            </div>
+            
+            <a href="{{ url_for('main.checkout') }}" class="checkout-btn">
+                <i class="fas fa-lock"></i>
+                Proceed to Checkout
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    {% else %}
+        <!-- Empty Cart -->
+        <div class="empty-cart">
+            <i class="fas fa-shopping-cart"></i>
+            <p>Your cart is empty</p>
+            <a href="{{ url_for('main.home') }}" class="continue-shopping">
+                <i class="fas fa-arrow-left me-2"></i>
+                Continue Shopping
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+    function updateQuantity(itemId, action) {
+        // Send AJAX request
+        fetch('/update-cart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                item_id: itemId,
+                action: action
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Reload the page to show updated quantities
+                window.location.reload();
+            } else {
+                alert('Error updating quantity: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to update quantity');
+        });
+    }
+</script>
+{% endblock %}

@@ -1,28 +1,403 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Products</title>
-</head>
-<body>
-    <h2>All Products</h2>
+{% extends "base1.html" %}
 
-    {% for product in products %}
-        <div>
-            {% if product.image %}
-                <img src="{{ url_for('static', filename='uploads/' ~ product.image) }}" alt="{{ product.name }}" width="200"><br>
-            {% endif %}
-            <h3>{{ product.name }}</h3>
-            <p>{{ product.description }}</p>
-            <strong>Ksh {{ product.price }}</strong>
-            <hr>
-            <a href="{{ url_for('main.add_to_cart', product_id=product.id) }}">
-Add To Cart
-</a>
-<hr><br>
+{% block title %}Products - Eagle Web Store{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* All your custom styles from home.html, but remove body styles */
+    * {
+        font-family: 'Inter', sans-serif;
+    }
+    
+    /* Override body styles - remove background from body since it's in base */
+    body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+    
+    .container-custom {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+    
+    /* Header Styles */
+    .page-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        margin-bottom: 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .page-header h2 {
+        margin: 0;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 2.5rem;
+        letter-spacing: -0.5px;
+    }
+    
+    .btn-add-product {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 15px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-add-product:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+    
+    /* Products Grid */
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 30px;
+        margin-bottom: 50px;
+    }
+    
+    /* Product Card */
+    .product-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 30px 50px rgba(0, 0, 0, 0.3);
+        background: white;
+    }
+    
+    /* Product Image */
+    .product-image-container {
+        position: relative;
+        overflow: hidden;
+        padding-top: 75%;
+        background: #f8f9fa;
+    }
+    
+    .product-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .product-card:hover .product-image {
+        transform: scale(1.1);
+    }
+    
+    .no-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+        color: #9ca3af;
+        font-size: 3rem;
+    }
+    
+    /* Product Badge */
+    .product-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(5px);
+        padding: 8px 15px;
+        border-radius: 30px;
+        font-weight: 600;
+        color: #764ba2;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        z-index: 1;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+    
+    /* Product Info */
+    .product-info {
+        padding: 25px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .product-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: #1f2937;
+        line-height: 1.3;
+    }
+    
+    .product-description {
+        color: #6b7280;
+        margin-bottom: 20px;
+        line-height: 1.6;
+        flex-grow: 1;
+        font-size: 0.95rem;
+    }
+    
+    .product-price {
+        font-size: 1.8rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 20px;
+    }
+    
+    .product-price::before {
+        content: 'Ksh';
+        font-size: 1rem;
+        font-weight: 400;
+        color: #9ca3af;
+        margin-right: 5px;
+        background: none;
+        -webkit-text-fill-color: #9ca3af;
+    }
+    
+    /* Buttons */
+    .btn-cart {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 15px 25px;
+        border-radius: 15px;
+        font-weight: 600;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+        width: 100%;
+        font-size: 1rem;
+        cursor: pointer;
+    }
+    
+    .btn-cart:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+    
+    .btn-cart i {
+        font-size: 1.2rem;
+    }
+    
+    /* Divider */
+    .custom-divider {
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.3), transparent);
+        margin: 30px 0;
+    }
+    
+    /* No Products Message */
+    .no-products {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 60px;
+        border-radius: 20px;
+        text-align: center;
+        color: #6b7280;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        grid-column: 1 / -1;
+    }
+    
+    .no-products i {
+        font-size: 4rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 20px;
+    }
+    
+    .no-products p {
+        font-size: 1.2rem;
+        margin: 0;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            gap: 20px;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .page-header h2 {
+            font-size: 2rem;
+        }
+        
+        .btn-add-product {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .products-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+    }
+    
+    /* Animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .product-card {
+        animation: fadeInUp 0.6s ease forwards;
+        opacity: 0;
+    }
+    
+    .product-card:nth-child(1) { animation-delay: 0.1s; }
+    .product-card:nth-child(2) { animation-delay: 0.2s; }
+    .product-card:nth-child(3) { animation-delay: 0.3s; }
+    .product-card:nth-child(4) { animation-delay: 0.4s; }
+    .product-card:nth-child(5) { animation-delay: 0.5s; }
+    .product-card:nth-child(6) { animation-delay: 0.6s; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-custom">
+    <!-- Header -->
+    <div class="page-header">
+        <h2>
+            <i class="fas fa-box me-2"></i>
+            All Products
+        </h2>
+        {% if current_user %}
+            <a href="{{ url_for('main.add_product') }}" class="btn-add-product">
+                <i class="fas fa-plus-circle"></i>
+                Add New Product
+            </a>
+        {% endif %}
+    </div>
+
+    <!-- Products Grid -->
+    <div class="products-grid">
+        {% if products %}
+            {% for product in products %}
+                <div class="product-card">
+                    <!-- Product Badge -->
+                    {% if loop.index <= 3 %}
+                        <div class="product-badge">
+                            <i class="fas fa-star me-1"></i> Featured
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Product Image -->
+                    <div class="product-image-container">
+                        {% if product.image %}
+                            <img src="{{ url_for('static', filename='uploads/' ~ product.image) }}" 
+                                 alt="{{ product.name }}" 
+                                 class="product-image">
+                        {% else %}
+                            <div class="no-image">
+                                <i class="fas fa-image"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Product Info -->
+                    <div class="product-info">
+                        <h3 class="product-title">{{ product.name }}</h3>
+                        <p class="product-description">{{ product.description }}</p>
+                        <div class="product-price">{{ product.price }}</div>
+                        
+                        <!-- Add to Cart Button -->
+                        <a href="{{ url_for('main.add_to_cart', product_id=product.id) }}" 
+                           class="btn-cart">
+                            <i class="fas fa-shopping-cart"></i>
+                            Add to Cart
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <!-- No Products Message -->
+            <div class="no-products">
+                <i class="fas fa-box-open mb-3"></i>
+                <p>No products available yet.</p>
+                {% if current_user %}
+                    <p class="mt-3">
+                        <a href="{{ url_for('main.add_product') }}" class="btn-add-product" style="display: inline-block; padding: 12px 25px;">
+                            <i class="fas fa-plus-circle me-2"></i>Add Your First Product
+                        </a>
+                    </p>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Decorative Divider -->
+    {% if products %}
+        <div class="custom-divider"></div>
+        
+        <!-- Product Stats -->
+        <div style="text-align: center; color: rgba(255,255,255,0.8); padding: 20px;">
+            <i class="fas fa-cube me-2"></i>
+            {{ products|length }} product{{ 's' if products|length != 1 else '' }} available
         </div>
-    {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}
 
-    <a href="{{ url_for('main.add_product') }}">Add Product</a><hr><br>
-
-</body>
-</html>
+{% block extra_js %}
+<script>
+    // Smooth scrolling (moved from home.html)
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+</script>
+{% endblock %}
