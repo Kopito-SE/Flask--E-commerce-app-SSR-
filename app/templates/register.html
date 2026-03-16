@@ -10,6 +10,13 @@
         <!-- Removed the hidden inputs that were causing issues -->
         <form method="POST" action="{{ url_for('auth.register') }}" class="auth-form" id="registerForm" novalidate>
             <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" class="form-control" 
+                       placeholder="Enter your email address" required autocomplete="email">
+                <div class="validation-feedback" id="email-feedback"></div>
+            </div>
+            
+            <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" class="form-control" 
                        placeholder="Enter your username" required autocomplete="off">
@@ -44,6 +51,9 @@
     .validation-feedback.error {
         color: #dc3545;
     }
+    .validation-feedback.success {
+        color: #28a745;
+    }
     .password-tips-container {
         font-size: 0.875rem;
         color: #6c757d;
@@ -72,6 +82,27 @@
     .btn-primary:disabled {
         background-color: #6c757d;
         cursor: not-allowed;
+    }
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    .form-control {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        transition: border-color 0.2s;
+    }
+    .form-control:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+    }
+    .form-control.error {
+        border-color: #dc3545;
+    }
+    .form-control.success {
+        border-color: #28a745;
     }
 </style>
 {% endblock %}

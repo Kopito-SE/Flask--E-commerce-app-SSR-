@@ -1,6 +1,9 @@
 ﻿from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import inspect, text
+from flask_mail import Mail
+
+mail = Mail()
 
 db = SQLAlchemy()
 
@@ -26,6 +29,15 @@ def create_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     db.init_app(app)
+    app.config["MAIL_SERVER"] = "smtp.gmail.com"
+    app.config["MAIL_PORT"] = 587
+    app.config["MAIL_USE_TLS"] = True
+    app.config["MAIL_USERNAME"] = "seth73602@gmail.com"
+    app.config["MAIL_PASSWORD"] = "ayht idek ajkv rfgl"
+    app.config["MAIL_DEFAULT_SENDER"] = "seth73602@gmail.com"
+    
+  
+    mail.init_app(app)
 
     # Ensure model metadata is loaded before create_all()
     from . import models  # noqa: F401
@@ -45,6 +57,8 @@ def create_app():
 
     app.register_blueprint(auth)
     app.register_blueprint(main)
+
+
 
     @app.context_processor
     def inject_user():
