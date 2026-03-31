@@ -1,0 +1,678 @@
+{% extends "base1.html" %}
+
+{% block title %}My Orders - Kopito Stores{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Orders Page Modern Styles */
+    .orders-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1.5rem;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    
+    /* Page Header */
+    .orders-header {
+        margin-bottom: 2.5rem;
+        text-align: center;
+    }
+    
+    .orders-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #1e293b 0%, #2d3a4f 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.02em;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .orders-title i {
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        font-size: 2rem;
+    }
+    
+    .orders-subtitle {
+        color: #64748b;
+        font-size: 1rem;
+        margin-top: 0.5rem;
+    }
+    
+    /* Order Stats */
+    .order-stats {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .stat-card {
+        background: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 2rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+    }
+    
+    .stat-card i {
+        font-size: 1.25rem;
+        color: #3b82f6;
+    }
+    
+    .stat-card span {
+        font-weight: 600;
+        color: #1e293b;
+    }
+    
+    .stat-card small {
+        color: #64748b;
+        font-size: 0.875rem;
+    }
+    
+    /* Order Card */
+    .order-card {
+        background: white;
+        border-radius: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid #e2e8f0;
+    }
+    
+    .order-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+        border-color: #cbd5e1;
+    }
+    
+    /* Order Header */
+    .order-header {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .order-info-left {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .order-number {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .order-number i {
+        color: #3b82f6;
+        font-size: 1.1rem;
+    }
+    
+    .order-date {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #64748b;
+        font-size: 0.875rem;
+        background: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 2rem;
+    }
+    
+    .order-date i {
+        font-size: 0.875rem;
+    }
+    
+    .order-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-transform: capitalize;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    
+    .order-status::before {
+        content: "●";
+        font-size: 0.75rem;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+    
+    /* Status Colors */
+    .status-pending {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        color: #d97706;
+    }
+    
+    .status-processing {
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        color: #2563eb;
+    }
+    
+    .status-shipped {
+        background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+        color: #7c3aed;
+    }
+    
+    .status-delivered {
+        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        color: #059669;
+    }
+    
+    .status-cancelled {
+        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        color: #dc2626;
+    }
+    
+    /* Order Body */
+    .order-body {
+        padding: 1.5rem;
+    }
+    
+    /* Items Grid */
+    .items-grid {
+        display: grid;
+        gap: 1rem;
+    }
+    
+    .order-item {
+        display: flex;
+        gap: 1rem;
+        padding: 1rem;
+        background: #f8fafc;
+        border-radius: 1rem;
+        transition: all 0.2s ease;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .order-item:hover {
+        background: white;
+        transform: translateX(4px);
+        border-color: #3b82f6;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    /* Product Image */
+    .product-image {
+        width: 80px;
+        height: 80px;
+        flex-shrink: 0;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    
+    .product-image:hover img {
+        transform: scale(1.1);
+    }
+    
+    .product-image i {
+        font-size: 2rem;
+        color: #94a3b8;
+    }
+    
+    /* Product Details */
+    .product-details {
+        flex: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .product-info {
+        flex: 1;
+    }
+    
+    .product-name {
+        font-weight: 700;
+        color: #1e293b;
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .product-price {
+        color: #64748b;
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .product-price strong {
+        color: #10b981;
+        font-size: 1rem;
+    }
+    
+    .item-quantity {
+        background: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 2rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #475569;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    
+    .item-total {
+        text-align: right;
+        min-width: 120px;
+    }
+    
+    .item-total-label {
+        font-size: 0.75rem;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .item-total-amount {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #10b981;
+    }
+    
+    /* Order Footer */
+    .order-footer {
+        background: #f8fafc;
+        padding: 1rem 1.5rem;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .order-total {
+        display: flex;
+        align-items: baseline;
+        gap: 0.5rem;
+    }
+    
+    .order-total-label {
+        font-weight: 600;
+        color: #475569;
+    }
+    
+    .order-total-amount {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #10b981;
+    }
+    
+    /* Admin Controls */
+    .admin-controls {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+    }
+    
+    .status-select {
+        padding: 0.5rem 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.75rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        background: white;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 1rem;
+        padding-right: 2rem;
+    }
+    
+    .status-select:hover {
+        border-color: #3b82f6;
+    }
+    
+    .status-select:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .update-btn {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        border-radius: 0.75rem;
+        cursor: pointer;
+        font-size: 0.875rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .update-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    
+    /* Empty State */
+    .empty-orders {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 1.5rem;
+        border: 2px dashed #e2e8f0;
+    }
+    
+    .empty-orders i {
+        font-size: 4rem;
+        color: #cbd5e1;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-orders h3 {
+        color: #1e293b;
+        margin-bottom: 0.5rem;
+    }
+    
+    .empty-orders p {
+        color: #64748b;
+        margin-bottom: 1.5rem;
+    }
+    
+    .shop-now-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        color: white;
+        text-decoration: none;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+    
+    .shop-now-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        color: white;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .orders-container {
+            padding: 0 1rem;
+        }
+        
+        .orders-title {
+            font-size: 1.75rem;
+        }
+        
+        .order-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .order-info-left {
+            width: 100%;
+            justify-content: space-between;
+        }
+        
+        .order-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .product-details {
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+        }
+        
+        .item-total {
+            text-align: left;
+            width: 100%;
+        }
+        
+        .order-footer {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .admin-controls {
+            width: 100%;
+        }
+        
+        .status-select {
+            flex: 1;
+        }
+        
+        .update-btn {
+            flex: 1;
+            justify-content: center;
+        }
+    }
+    
+    /* Loading Animation */
+    @keyframes shimmer {
+        0% { background-position: -1000px 0; }
+        100% { background-position: 1000px 0; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="orders-container">
+    <div class="orders-header">
+        <h1 class="orders-title">
+            <i class="fas fa-shopping-bag"></i>
+            My Orders
+        </h1>
+        <p class="orders-subtitle">Track and manage your orders</p>
+    </div>
+    
+    {% if orders %}
+        <!-- Order Statistics -->
+        <div class="order-stats">
+            <div class="stat-card">
+                <i class="fas fa-box"></i>
+                <span>{{ orders|length }}</span>
+                <small>Total Orders</small>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-truck"></i>
+                <span>{{ orders|selectattr('order_status', 'equalto', 'shipped')|list|length }}</span>
+                <small>In Transit</small>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-check-circle"></i>
+                <span>{{ orders|selectattr('order_status', 'equalto', 'delivered')|list|length }}</span>
+                <small>Delivered</small>
+            </div>
+        </div>
+        
+        {% for order in orders %}
+        <div class="order-card">
+            <div class="order-header">
+                <div class="order-info-left">
+                    <h3 class="order-number">
+                        <i class="fas fa-hashtag"></i>
+                        Order #{{ order.id }}
+                    </h3>
+                    {% if order.created_at %}
+                    <div class="order-date">
+                        <i class="fas fa-calendar-alt"></i>
+                        {{ order.created_at.strftime('%B %d, %Y') }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div>
+                    <span class="order-status status-{{ order.order_status|lower }}">
+                        {{ order.order_status }}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="order-body">
+                <div class="items-grid">
+                    {% for item in order.items %}
+                    <div class="order-item">
+                        <div class="product-image">
+                            {% if item.product.image %}
+                                <img src="{{ url_for('static', filename='uploads/' ~ item.product.image) }}" alt="{{ item.product.name }}">
+                            {% else %}
+                                <i class="fas fa-image"></i>
+                            {% endif %}
+                        </div>
+                        <div class="product-details">
+                            <div class="product-info">
+                                <div class="product-name">{{ item.product.name }}</div>
+                                <div class="product-price">
+                                    <span>Price: Ksh {{ "{:,.2f}".format(item.product.price|float) }}</span>
+                                    <span class="item-quantity">
+                                        <i class="fas fa-times"></i>
+                                        {{ item.quantity }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="item-total">
+                                <div class="item-total-label">Total</div>
+                                <div class="item-total-amount">
+                                    Ksh {{ "{:,.2f}".format((item.product.price|float) * item.quantity) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="order-footer">
+                <div class="order-total">
+                    <span class="order-total-label">Order Total:</span>
+                    <span class="order-total-amount">
+                        {% set ns = namespace(total=0) %}
+                        {% for item in order.items %}
+                            {% set ns.total = ns.total + ((item.product.price|float) * item.quantity) %}
+                        {% endfor %}
+                        Ksh {{ "{:,.2f}".format(ns.total) }}
+                    </span>
+                </div>
+                
+                <!-- Admin controls -->
+                {% if current_user.is_authenticated and current_user.role == "admin" %}
+                <div class="admin-controls">
+                    <form method="POST" action="{{ url_for('admin.update_order_status', order_id=order.id) }}" style="display: flex; gap: 0.75rem; width: 100%;">
+                        <select name="status" class="status-select">
+                            <option value="pending" {% if order.order_status|lower == 'pending' %}selected{% endif %}>⏳ Pending</option>
+                            <option value="processing" {% if order.order_status|lower == 'processing' %}selected{% endif %}>⚙️ Processing</option>
+                            <option value="shipped" {% if order.order_status|lower == 'shipped' %}selected{% endif %}>📦 Shipped</option>
+                            <option value="delivered" {% if order.order_status|lower == 'delivered' %}selected{% endif %}>✅ Delivered</option>
+                            <option value="cancelled" {% if order.order_status|lower == 'cancelled' %}selected{% endif %}>❌ Cancelled</option>
+                        </select>
+                        <button type="submit" class="update-btn">
+                            <i class="fas fa-sync-alt"></i>
+                            Update Status
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-orders">
+            <i class="fas fa-shopping-bag"></i>
+            <h3>No Orders Yet</h3>
+            <p>You haven't placed any orders. Start shopping to see your orders here!</p>
+            <a href="/" class="shop-now-btn">
+                <i class="fas fa-shopping-cart"></i>
+                Start Shopping
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add animation to order cards on load
+    document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.order-card');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                card.style.transition = 'all 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+    });
+    
+    // Status select color change on selection
+    const statusSelects = document.querySelectorAll('.status-select');
+    statusSelects.forEach(select => {
+        select.addEventListener('change', function() {
+            const value = this.value;
+            let color = '';
+            switch(value) {
+                case 'pending': color = '#f59e0b'; break;
+                case 'processing': color = '#3b82f6'; break;
+                case 'shipped': color = '#8b5cf6'; break;
+                case 'delivered': color = '#10b981'; break;
+                case 'cancelled': color = '#ef4444'; break;
+                default: color = '#64748b';
+            }
+            this.style.borderColor = color;
+        });
+    });
+</script>
+{% endblock %}

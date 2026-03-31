@@ -1,0 +1,142 @@
+{% extends "base1.html" %}
+
+{% block title %}{{ product.name }} | Kopito Stores{% endblock %}
+
+{% block extra_css %}
+<style>
+    .product-detail {
+        max-width: 1100px;
+        margin: 3rem auto;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 32px;
+        box-shadow: 0 25px 50px rgba(15, 23, 42, 0.2);
+    }
+
+    .product-detail h1 {
+        font-size: 2.75rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+    }
+
+    .product-meta span {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin-right: 1.25rem;
+        font-size: 0.95rem;
+        color: #475569;
+    }
+
+    .product-price {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin: 1rem 0;
+        color: #0f172a;
+    }
+
+    .feature-badge {
+        padding: 0.35rem 0.85rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        background: #ecfdf5;
+        color: #065f46;
+        font-weight: 600;
+        margin-right: 0.6rem;
+    }
+
+    .product-image {
+        width: 100%;
+        border-radius: 24px;
+        object-fit: cover;
+        max-height: 400px;
+    }
+
+    .product-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-top: 1.5rem;
+    }
+
+    .related-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5rem;
+        margin-top: 3rem;
+    }
+
+    .related-card {
+        background: var(--surface);
+        padding: 1rem;
+        border-radius: 18px;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        text-align: center;
+        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.1);
+    }
+    .related-card h4 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 0.5rem;
+    }
+
+    .related-card .price {
+        font-weight: 600;
+        color: #2563eb;
+        margin-bottom: 0.6rem;
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="product-detail">
+    <div class="row g-4 align-items-center">
+        <div class="col-md-6">
+            {% if product.image %}
+            <img src="{{ url_for('static', filename='uploads/' ~ product.image) }}" alt="{{ product.name }}" class="product-image">
+            {% else %}
+            <div class="product-image bg-secondary d-flex align-items-center justify-content-center text-white">
+                <i class="fas fa-box-open fa-3x"></i>
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-md-6">
+            <div class="product-meta mb-3">
+                <span class="feature-badge">Best Seller</span>
+                <span><i class="fas fa-tag"></i> {{ product.category.name if product.category else "Uncategorized" }}</span>
+                {% if product.created_at %}
+                    <span><i class="fas fa-calendar-day"></i> Added {{ product.created_at.strftime('%B %d, %Y') }}</span>
+                {% endif %}
+            </div>
+            <h1>{{ product.name }}</h1>
+            <p class="text-muted">{{ product.description or "No product description yet, but rest assured it will impress." }}</p>
+            <div class="product-price">Ksh {{ product.price|format_price }}</div>
+            <div class="product-actions">
+                <a href="{{ url_for('main.add_to_cart', product_id=product.id) }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+                </a>
+                <a href="{{ url_for('main.cart') }}" class="btn btn-outline-secondary btn-lg">
+                    <i class="fas fa-shopping-bag me-2"></i> View Cart
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% if related %}
+    <div class="mt-5">
+        <h3 class="mb-4">You might also like</h3>
+        <div class="related-grid">
+            {% for item in related %}
+            <div class="related-card">
+                <h4>{{ item.name }}</h4>
+                <span class="price">Ksh {{ item.price|format_price }}</span>
+                <a href="{{ url_for('main.product_detail', product_id=item.id) }}" class="btn btn-sm btn-outline-primary">View</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

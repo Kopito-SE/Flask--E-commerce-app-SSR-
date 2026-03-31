@@ -1,0 +1,653 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-color: #4361ee;
+        --primary-dark: #3a56d4;
+        --secondary-color: #3f37c9;
+        --accent-color: #4cc9f0;
+        --success-color: #06d6a0;
+        --warning-color: #ffd166;
+        --danger-color: #ef476f;
+        --dark-color: #1a1e2b;
+        --darker-color: #0f121c;
+        --light-color: #ffffff;
+        --gray-100: #f8f9fa;
+        --gray-200: #e9ecef;
+        --gray-300: #dee2e6;
+        --gray-400: #ced4da;
+        --gray-500: #adb5bd;
+        --gray-600: #6c757d;
+        --gray-700: #495057;
+        --gray-800: #343a40;
+        --gray-900: #212529;
+        --text-primary: #2c3e50;
+        --text-secondary: #34495e;
+        --text-muted: #7f8c8d;
+        --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+        --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+        --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+        --shadow-hover: 0 20px 25px rgba(67, 97, 238, 0.15);
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background-color: var(--gray-100);
+        color: var(--text-primary);
+    }
+
+    .dashboard-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Welcome Section */
+    .welcome-section {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border-radius: 20px;
+        padding: 40px;
+        margin-bottom: 40px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .welcome-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 1%, transparent 1%);
+        background-size: 50px 50px;
+        animation: moveDots 20s linear infinite;
+    }
+
+    @keyframes moveDots {
+        from {
+            transform: translate(0, 0);
+        }
+        to {
+            transform: translate(50px, 50px);
+        }
+    }
+
+    .welcome-section h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .welcome-section p {
+        font-size: 1.1rem;
+        opacity: 0.95;
+        position: relative;
+        z-index: 1;
+    }
+
+    .welcome-section i {
+        font-size: 2.5rem;
+    }
+
+    /* Stats Cards */
+    .dashboard-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+    }
+
+    .stat-card {
+        background: var(--light-color);
+        padding: 25px;
+        border-radius: 20px;
+        box-shadow: var(--shadow-md);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid var(--gray-200);
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+        border-color: var(--primary-color);
+    }
+
+    .stat-icon {
+        font-size: 2rem;
+        margin-bottom: 15px;
+        display: block;
+    }
+
+    .stat-card:nth-child(1) .stat-icon { color: var(--primary-color); }
+    .stat-card:nth-child(2) .stat-icon { color: var(--success-color); }
+    .stat-card:nth-child(3) .stat-icon { color: var(--warning-color); }
+    .stat-card:nth-child(4) .stat-icon { color: var(--danger-color); }
+
+    .stat-card h3 {
+        color: var(--gray-700);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+
+    .stat-value {
+        color: var(--text-primary);
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: 5px;
+    }
+
+    .stat-label {
+        color: var(--gray-600);
+        font-size: 0.85rem;
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+        background: var(--light-color);
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 40px;
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--gray-200);
+    }
+
+    .quick-actions h2 {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .btn-primary, .btn-outline, .btn-danger {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        border: none;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+    }
+
+    .btn-outline {
+        border: 2px solid var(--primary-color);
+        color: var(--primary-color);
+        background: transparent;
+    }
+
+    .btn-outline:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, var(--danger-color), #d64161);
+        color: white;
+    }
+
+    .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(239, 71, 111, 0.3);
+    }
+
+    /* Orders Section */
+    .orders-section {
+        background: var(--light-color);
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 40px;
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--gray-200);
+    }
+
+    .orders-section h2 {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .orders-table {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th {
+        text-align: left;
+        padding: 15px;
+        background: var(--gray-100);
+        color: var(--gray-700);
+        font-weight: 600;
+        border-bottom: 2px solid var(--gray-300);
+    }
+
+    td {
+        padding: 15px;
+        border-bottom: 1px solid var(--gray-200);
+    }
+
+    .order-status {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-processing {
+        background: #cce5ff;
+        color: #004085;
+    }
+
+    .status-shipped {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .status-delivered {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-cancelled {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .btn-sm {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+
+    /* Products Section */
+    .products-section {
+        background: var(--light-color);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--gray-200);
+    }
+
+    .products-section h2 {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+    }
+
+    .product-card {
+        background: var(--light-color);
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.3s ease;
+        border: 1px solid var(--gray-200);
+        position: relative;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--primary-color);
+    }
+
+    .product-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 12px;
+        margin-bottom: 15px;
+    }
+
+    .product-icon {
+        font-size: 3rem;
+        color: var(--accent-color);
+        margin-bottom: 15px;
+        display: block;
+        text-align: center;
+    }
+
+    .product-card h3 {
+        color: var(--text-primary);
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .product-price {
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 10px 0;
+    }
+
+    .product-description {
+        color: var(--gray-600);
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+        line-height: 1.4;
+    }
+
+    .product-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 40px;
+        background: var(--gray-100);
+        border-radius: 16px;
+        border: 2px dashed var(--gray-300);
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--gray-400);
+        margin-bottom: 20px;
+        display: block;
+    }
+
+    .empty-state p {
+        color: var(--gray-600);
+        font-size: 1.1rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .dashboard-container {
+            padding: 20px 15px;
+        }
+
+        .welcome-section {
+            padding: 25px;
+        }
+
+        .welcome-section h1 {
+            font-size: 1.8rem;
+        }
+
+        .dashboard-stats {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .btn-primary, .btn-outline, .btn-danger {
+            width: 100%;
+            justify-content: center;
+        }
+
+        th, td {
+            padding: 10px;
+            font-size: 0.9rem;
+        }
+
+        .product-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --light-color: #1e1e2e;
+            --gray-100: #2d2d3a;
+            --gray-200: #3d3d4a;
+            --gray-300: #4d4d5a;
+            --gray-600: #a0a0b0;
+            --gray-700: #c0c0d0;
+            --text-primary: #e0e0f0;
+        }
+
+        body {
+            background-color: #151521;
+        }
+    }
+</style>
+
+<div class="dashboard-container">
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+        <h1>
+            <i class="fas fa-user-circle"></i>
+            Welcome back, {{ user.username }}!
+        </h1>
+        <p>Manage your orders, track deliveries, and discover new products</p>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="dashboard-stats">
+        <div class="stat-card" onclick="window.location.href='{{ url_for('main.orders') }}'">
+            <i class="fas fa-shopping-bag stat-icon"></i>
+            <h3>Total Orders</h3>
+            <div class="stat-value">{{ orders_count|default(0) }}</div>
+            <div class="stat-label">View all orders →</div>
+        </div>
+        
+        <div class="stat-card" onclick="window.location.href='{{ url_for('main.view_cart') }}'">
+            <i class="fas fa-shopping-cart stat-icon"></i>
+            <h3>Cart Items</h3>
+            <div class="stat-value">{{ cart_count|default(0) }}</div>
+            <div class="stat-label">View cart →</div>
+        </div>
+        
+        <div class="stat-card">
+            <i class="fas fa-user-tag stat-icon"></i>
+            <h3>Account Type</h3>
+            <div class="stat-value">{{ user.role|capitalize }}</div>
+            <div class="stat-label">{{ 'Administrator' if user.role == 'admin' else 'Customer' }}</div>
+        </div>
+        
+        <div class="stat-card">
+            <i class="fas fa-calendar-alt stat-icon"></i>
+            <h3>Member Since</h3>
+            <div class="stat-value">{{ user.created_at.strftime('%b %Y') if user.created_at else 'N/A' }}</div>
+            <div class="stat-label">Active member</div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <h2>
+            <i class="fas fa-bolt"></i>
+            Quick Actions
+        </h2>
+        <div class="action-buttons">
+            <a href="{{ url_for('main.home') }}" class="btn-primary">
+                <i class="fas fa-store"></i>
+                Continue Shopping
+            </a>
+            <a href="{{ url_for('main.view_cart') }}" class="btn-outline">
+                <i class="fas fa-shopping-cart"></i>
+                View Cart
+            </a>
+            <a href="{{ url_for('main.orders') }}" class="btn-outline">
+                <i class="fas fa-truck"></i>
+                My Orders
+            </a>
+            {% if user.role == 'admin' %}
+            <a href="{{ url_for('main.admin_dashboard') }}" class="btn-danger">
+                <i class="fas fa-chart-line"></i>
+                Admin Dashboard
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Recent Orders Section -->
+    <div class="orders-section">
+        <h2>
+            <i class="fas fa-clock"></i>
+            Recent Orders
+        </h2>
+        {% if recent_orders %}
+        <div class="orders-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in recent_orders %}
+                    <tr>
+                        <td>#{{ order.id }}</td>
+                        <td>{{ order.created_at.strftime('%b %d, %Y') if order.created_at else 'N/A' }}</td>
+                        <td>Ksh {{ (order.total_amount if order.total_amount else 0)|format_price }}</td>
+                        <td>
+                            <span class="order-status status-{{ order.order_status|lower }}">
+                                {{ order.order_status|capitalize }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('main.checkout_success', order_id=order.id) }}" class="btn-primary btn-sm">View Details</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-shopping-bag"></i>
+            <p>You haven't placed any orders yet</p>
+            <a href="{{ url_for('main.home') }}" class="btn-primary" style="margin-top: 20px; display: inline-block;">
+                Start Shopping
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Products Section -->
+    <div class="products-section">
+        <h2>
+            <i class="fas fa-star"></i>
+            Featured Products
+        </h2>
+        <div class="product-grid">
+            {% for product in products[:6] %}
+            <div class="product-card">
+                {% if product.image %}
+                <img src="{{ url_for('static', filename='uploads/' + product.image) }}" alt="{{ product.name }}" class="product-image">
+                {% else %}
+                <i class="fas fa-cube product-icon"></i>
+                {% endif %}
+                <h3>{{ product.name }}</h3>
+                <div class="product-price">Ksh {{ product.price|format_price }}</div>
+                <div class="product-description">{{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}</div>
+                <div class="product-actions">
+                    <a href="{{ url_for('main.add_to_cart', product_id=product.id) }}" class="btn-primary btn-sm">
+                        <i class="fas fa-cart-plus"></i> Add to Cart
+                    </a>
+                    <a href="#" class="btn-outline btn-sm">
+                        <i class="fas fa-info-circle"></i> Details
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-box-open"></i>
+                <p>No products available yet</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Add Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}

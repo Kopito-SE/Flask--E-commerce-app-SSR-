@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Kopito Web Store{% endblock %}</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons (moved from home.html) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts (moved from home.html) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom Navbar Styles -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f8fafc;
+        }
+
+        /* Modern Navbar Styles */
+        .modern-navbar {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            backdrop-filter: blur(10px);
+            padding: 0.75rem 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand-modern {
+            font-size: 1.75rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .navbar-brand-modern i {
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 1.5rem;
+        }
+
+        .navbar-brand-modern:hover {
+            transform: scale(1.05);
+            opacity: 0.95;
+        }
+
+        /* Nav Links Container */
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Modern Nav Items */
+        .nav-item-modern {
+            position: relative;
+            list-style: none;
+        }
+
+        .nav-link-modern {
+            color: #e2e8f0;
+            font-weight: 500;
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.75rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link-modern i {
+            font-size: 1.1rem;
+            transition: transform 0.2s ease;
+        }
+
+        .nav-link-modern:hover {
+            color: white;
+            background: rgba(96, 165, 250, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .nav-link-modern:hover i {
+            transform: translateY(-2px);
+        }
+
+        /* Active link indicator */
+        .nav-link-modern.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .nav-link-modern.active i {
+            color: white;
+        }
+
+        /* Admin badge */
+        .admin-badge {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 1rem;
+            margin-left: 0.5rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* User avatar */
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-right: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        /* Cart indicator */
+        .cart-indicator {
+            position: relative;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.2rem 0.5rem;
+            border-radius: 1rem;
+            min-width: 20px;
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        /* Mobile menu button */
+        .navbar-toggler-modern {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.75rem;
+            padding: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-toggler-modern:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        .navbar-toggler-modern:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+            outline: none;
+        }
+
+        /* Dropdown menu for admin (optional) */
+        .dropdown-menu-modern {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .dropdown-item-modern {
+            color: #e2e8f0;
+            padding: 0.625rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .dropdown-item-modern:hover {
+            background: rgba(96, 165, 250, 0.2);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 991.98px) {
+            .nav-links {
+                padding: 1rem 0;
+            }
+            
+            .nav-link-modern {
+                justify-content: center;
+                padding: 0.75rem;
+            }
+            
+            .navbar-brand-modern {
+                font-size: 1.5rem;
+            }
+            
+            .user-info {
+                margin-top: 0.5rem;
+                justify-content: center;
+            }
+        }
+
+        /* User info section */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 2rem;
+            transition: all 0.2s ease;
+        }
+
+        .user-info:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .username {
+            color: #e2e8f0;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        /* Scroll effect */
+        .modern-navbar.scrolled {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+    
+    <!-- Block for additional head content -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Modern Navbar -->
+    <nav class="modern-navbar" id="mainNavbar">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <!-- Brand Logo -->
+                <a class="navbar-brand-modern" href="/">
+                    <i class="fas fa-store"></i>
+                    Kopito Stores
+                </a>
+                
+                <!-- Mobile Toggle Button -->
+                <button class="navbar-toggler-modern d-lg-none" type="button" id="mobileMenuToggle">
+                    <i class="fas fa-bars" style="color: white; font-size: 1.25rem;"></i>
+                </button>
+                
+                <!-- Desktop Navigation -->
+                <div class="d-none d-lg-block">
+                    <ul class="nav-links mb-0">
+                        <li class="nav-item-modern">
+                            <a class="nav-link-modern" href="/">
+                                <i class="fas fa-home"></i>
+                                Home
+                            </a>
+                        </li>
+                        {% if current_user %}
+                            <li class="nav-item-modern">
+                                <a class="nav-link-modern" href="/">
+                                    <i class="fas fa-box-open"></i>
+                                    Products
+                                </a>
+                            </li>
+                            <li class="nav-item-modern cart-indicator">
+                                <a class="nav-link-modern" href="/cart">
+                                    <i class="fas fa-shopping-cart"></i>
+                                    Cart
+                                    {% if cart_count %}
+                                        <span class="cart-badge">{{ cart_count }}</span>
+                                    {% endif %}
+                                </a>
+                            </li>
+                            <li class="nav-item-modern">
+                                <a class="nav-link-modern" href="/orders">
+                                    <i class="fas fa-truck"></i>
+                                    Orders
+                                </a>
+                            </li>
+                            {% if current_user.role == "admin" %}
+                                <li class="nav-item-modern">
+                                    <a class="nav-link-modern" href="/admin/dashboard">
+                                        <i class="fas fa-chart-line"></i>
+                                        Dashboard
+                                        <span class="admin-badge">Admin</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item-modern">
+                                    <a class="nav-link-modern" href="/admin/products">
+                                        <i class="fas fa-cubes"></i>
+                                        Products
+                                    </a>
+                                </li>
+                                <li class="nav-item-modern">
+                                    <a class="nav-link-modern" href="/admin/categories">
+                                        <i class="fas fa-tags"></i>
+                                        Categories
+                                    </a>
+                                </li>
+                                <li class="nav-item-modern">
+                                    <a class="nav-link-modern" href="/admin/orders">
+                                        <i class="fas fa-clipboard-list"></i>
+                                        Orders
+                                    </a>
+                                </li>
+                                <li class="nav-item-modern">
+                                    <a class="nav-link-modern" href="/add-product">
+                                        <i class="fas fa-plus-circle"></i>
+                                        Add Product
+                                    </a>
+                                </li>
+                            {% endif %}
+                            <li class="nav-item-modern">
+                                <div class="user-info">
+                                    <div class="user-avatar">
+                                        {{ current_user.username[0]|upper }}
+                                    </div>
+                                    <span class="username">{{ current_user.username }}</span>
+                                </div>
+                            </li>
+                            <li class="nav-item-modern">
+                                <a class="nav-link-modern" href="/logout">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Logout
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item-modern">
+                                <a class="nav-link-modern" href="/login">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                    Login
+                                </a>
+                            </li>
+                            <li class="nav-item-modern">
+                                <a class="nav-link-modern" href="/register">
+                                    <i class="fas fa-user-plus"></i>
+                                    Register
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Mobile Navigation Menu -->
+            <div class="mobile-menu d-lg-none" id="mobileMenu" style="display: none;">
+                <ul class="nav-links flex-column mt-3">
+                    <li class="nav-item-modern w-100">
+                        <a class="nav-link-modern" href="/">
+                            <i class="fas fa-home"></i>
+                            Home
+                        </a>
+                    </li>
+                    {% if current_user %}
+                        <li class="nav-item-modern w-100">
+                            <a class="nav-link-modern" href="/">
+                                <i class="fas fa-box-open"></i>
+                                Products
+                            </a>
+                        </li>
+                        <li class="nav-item-modern w-100 cart-indicator">
+                            <a class="nav-link-modern" href="/cart">
+                                <i class="fas fa-shopping-cart"></i>
+                                Cart
+                                {% if cart_count %}
+                                    <span class="cart-badge">{{ cart_count }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        <li class="nav-item-modern w-100">
+                            <a class="nav-link-modern" href="/orders">
+                                <i class="fas fa-truck"></i>
+                                Orders
+                            </a>
+                        </li>
+                        {% if current_user.role == "admin" %}
+                            <li class="nav-item-modern w-100">
+                                <a class="nav-link-modern" href="/admin/dashboard">
+                                    <i class="fas fa-chart-line"></i>
+                                    Dashboard
+                                    <span class="admin-badge">Admin</span>
+                                </a>
+                            </li>
+                            <li class="nav-item-modern w-100">
+                                <a class="nav-link-modern" href="/admin/products">
+                                    <i class="fas fa-cubes"></i>
+                                    Products
+                                </a>
+                            </li>
+                            <li class="nav-item-modern w-100">
+                                <a class="nav-link-modern" href="/admin/categories">
+                                    <i class="fas fa-tags"></i>
+                                    Categories
+                                </a>
+                            </li>
+                            <li class="nav-item-modern w-100">
+                                <a class="nav-link-modern" href="/admin/orders">
+                                    <i class="fas fa-clipboard-list"></i>
+                                    Orders
+                                </a>
+                            </li>
+                            <li class="nav-item-modern w-100">
+                                <a class="nav-link-modern" href="/add-product">
+                                    <i class="fas fa-plus-circle"></i>
+                                    Add Product
+                                </a>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item-modern w-100">
+                            <div class="user-info w-100 justify-content-center">
+                                <div class="user-avatar">
+                                    {{ current_user.username[0]|upper }}
+                                </div>
+                                <span class="username">{{ current_user.username }}</span>
+                            </div>
+                        </li>
+                        <li class="nav-item-modern w-100">
+                            <a class="nav-link-modern" href="/logout">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Logout
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item-modern w-100">
+                            <a class="nav-link-modern" href="/login">
+                                <i class="fas fa-sign-in-alt"></i>
+                                Login
+                            </a>
+                        </li>
+                        <li class="nav-item-modern w-100">
+                            <a class="nav-link-modern" href="/register">
+                                <i class="fas fa-user-plus"></i>
+                                Register
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% set tone_map = {'success':'success','error':'danger','warning':'warning','info':'info'} %}
+                    {% set tone = tone_map.get(category, 'info') %}
+                    <div class="alert alert-{{ tone }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content Container -->
+    <div class="container-fluid px-0">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- Modern Footer -->
+    <footer class="bg-dark text-light py-5 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h5 class="fw-bold mb-3">
+                        <i class="fas fa-store me-2"></i>Kopito Stores
+                    </h5>
+                    <p class="text-secondary">Your one-stop shop for quality products with exceptional service.</p>
+                </div>
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h5 class="fw-bold mb-3">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="/" class="text-secondary text-decoration-none hover-text-primary">Home</a></li>
+                        <li class="mb-2"><a href="/" class="text-secondary text-decoration-none hover-text-primary">Products</a></li>
+                        {% if current_user %}
+                            <li class="mb-2"><a href="/orders" class="text-secondary text-decoration-none hover-text-primary">My Orders</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="fw-bold mb-3">Connect With Us</h5>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-secondary fs-4 hover-text-primary"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-secondary fs-4 hover-text-primary"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-secondary fs-4 hover-text-primary"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-secondary fs-4 hover-text-primary"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="mt-4 mb-3" style="border-color: rgba(255,255,255,0.1);">
+            <div class="text-center">
+                <p class="mb-0 text-secondary">
+                    <i class="fas fa-copyright me-1"></i> 2026 Kopito Web Store. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Navbar Scripts -->
+    <script>
+        // Mobile menu toggle
+        const mobileToggle = document.getElementById('mobileMenuToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        if (mobileToggle && mobileMenu) {
+            mobileToggle.addEventListener('click', function() {
+                if (mobileMenu.style.display === 'none' || !mobileMenu.style.display) {
+                    mobileMenu.style.display = 'block';
+                    this.querySelector('i').classList.remove('fa-bars');
+                    this.querySelector('i').classList.add('fa-times');
+                } else {
+                    mobileMenu.style.display = 'none';
+                    this.querySelector('i').classList.remove('fa-times');
+                    this.querySelector('i').classList.add('fa-bars');
+                }
+            });
+        }
+        
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('mainNavbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+        
+        // Active link highlighting
+        const currentLocation = window.location.pathname;
+        const navLinks = document.querySelectorAll('.nav-link-modern');
+        
+        navLinks.forEach(link => {
+            const linkPath = link.getAttribute('href');
+            if (linkPath === currentLocation) {
+                link.classList.add('active');
+            }
+        });
+    </script>
+    
+    <!-- Block for additional scripts -->
+    {% block extra_js %}{% endblock %}
+
+    <style>
+        .hover-text-primary:hover {
+            color: #60a5fa !important;
+            transition: color 0.2s ease;
+        }
+    </style>
+</body>
+</html>

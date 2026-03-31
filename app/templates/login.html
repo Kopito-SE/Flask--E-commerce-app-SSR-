@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Login - FlaskApp{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h2 class="auth-title">Welcome Back!</h2>
+        
+        <form method="POST" action="{{ url_for('auth.login') }}" class="auth-form" id="loginForm">
+            <!--Bellow inputs are added to prevent browser autofill and password managers from interfering with our custom login form. They are hidden and have autocomplete turned off to ensure they don't affect the user experience-->
+            <input type="text" style="display:none" aria-hidden="true">
+            <input type="password" style="display:none" aria-hidden="true">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" 
+                       id="username" 
+                       name="username" 
+                       placeholder="username"
+                       class="form-control" 
+                       required 
+                       autofocus
+                       autocomplete="off">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" 
+                       id="password" 
+                       name="password" 
+                       placeholder="password"
+                       class="form-control" 
+                       required
+                       autocomplete="off">
+            </div>
+            
+            <div class="form-group form-checkbox">
+                <label>
+                    <input type="checkbox" name="remember"> Remember me
+                </label>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block">Login</button>
+        </form>
+        
+        <div class="auth-footer">
+            Don't have an account? <a href="{{ url_for('auth.register') }}">Register here</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/login.js') }}"></script>
+{% endblock %}
