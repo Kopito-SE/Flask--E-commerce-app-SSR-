@@ -25,7 +25,7 @@ def create_app():
     app = Flask(__name__)
 
     app.config["SECRET_KEY"] = "supersecretkey"
-    app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:osama4545@localhost/flask_authentication"
+    app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:pFakuKfatsmgOtpWkBLMjweZfKNgWiJm@interchange.proxy.rlwy.net:11993/railway"
 
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
