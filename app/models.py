@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from . import db
 
 class User(db.Model):
@@ -7,6 +9,10 @@ class User(db.Model):
     password = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(100), nullable=False)
     role = db.Column(db.String(20), default= "user")
+    verified = db.Column(db.Boolean, default=False)
+    verification_code = db.Column(db.String(100))
+    code_expiry = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Category(db.Model):
     __tablename__ = 'category'
