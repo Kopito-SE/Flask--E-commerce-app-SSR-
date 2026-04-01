@@ -2,6 +2,10 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import inspect, text
 from flask_mail import Mail
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 mail = Mail()
 
@@ -24,7 +28,9 @@ def _ensure_column_exists(table, column, column_sql):
 def create_app():
     app = Flask(__name__)
 
-    app.config["SECRET_KEY"] = "supersecretkey"
+    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
+    if not app.config["SECRET_KEY"]:
+     raise ValueError("SECRET_KEY is not set!")
     app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:pFakuKfatsmgOtpWkBLMjweZfKNgWiJm@interchange.proxy.rlwy.net:11993/railway"
 
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
