@@ -27,6 +27,7 @@ class Product(db.Model):
     description = db.Column(db.Text, nullable=True)
     
     image = db.Column(db.String(200), nullable=True)
+    cloudinary_url = db.Column(db.String(200), nullable=True)
     category_id = db.Column(db.Integer, db.ForeignKey("category.id"), nullable=True)
 
     def __repr__(self):
