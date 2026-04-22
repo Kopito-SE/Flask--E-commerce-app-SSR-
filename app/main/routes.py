@@ -5,7 +5,55 @@ from werkzeug.utils import secure_filename
 
 from .. import db
 from ..models import CartItem, Category, CustomerOrder, OrderItem, Product, User
+
+try:
+    import cloudinary
+    import cloudinary.uploader
+except Exception:
+    cloudinary = None
+
 main = Blueprint("main", __name__)
+
+
+def _configure_cloudinary():
+    if cloudinary is None:
+        return False
+
+    cloud_name = os.environ.get("CLOUDINARY_CLOUD_NAME")
+    api_key = os.environ.get("CLOUDINARY_API_KEY")
+    api_secret = os.environ.get("CLOUDINARY_API_SECRET")
+
+    if not all([cloud_name, api_key, api_secret]):
+        return False
+
+    cloudinary.config(
+        cloud_name=cloud_name,
+        api_key=api_key,
+        api_secret=api_secret,
+        secure=True,
+    )
+    return True
+
+
+def _store_product_image(file_storage):
+    filename = secure_filename(file_storage.filename)
+    if not filename:
+        raise ValueError("Invalid image filename!")
+
+    upload_folder = os.path.join(current_app.static_folder, "uploads")
+    os.makedirs(upload_folder, exist_ok=True)
+    file_path = os.path.join(upload_folder, filename)
+    file_storage.save(file_path)
+
+    cloudinary_url = None
+    if _configure_cloudinary():
+        try:
+            result = cloudinary.uploader.upload(file_path, folder="products")
+            cloudinary_url = result.get("secure_url")
+        except Exception as exc:
+            current_app.logger.warning("Cloudinary upload failed: %s", exc)
+
+    return filename, cloudinary_url
 
 
 @main.route("/")
@@ -78,18 +126,13 @@ def add_product():
             return redirect(url_for("main.add_product"))
 
         filename = None
+        cloudinary_url = None
         if file and file.filename:
-            filename = secure_filename(file.filename)
-            if not filename:
-                flash("Invalid image filename!")
-                return redirect(url_for("main.add_product"))
-
-            upload_folder = os.path.join(current_app.static_folder, "uploads")
-            os.makedirs(upload_folder, exist_ok=True)
-            filepath = os.path.join(upload_folder, filename)
-
             try:
-                file.save(filepath)
+                filename, cloudinary_url = _store_product_image(file)
+            except ValueError as e:
+                flash(str(e))
+                return redirect(url_for("main.add_product"))
             except Exception as e:
                 flash(f"Error saving file: {str(e)}")
                 return redirect(url_for("main.add_product"))
@@ -105,6 +148,7 @@ def add_product():
             price=price_float,
             description=description,
             image=filename,
+            cloudinary_url=cloudinary_url,
             category_id=int(category_id),
         )
 
@@ -387,12 +431,17 @@ def edit_product(product_id):
         product.category_id = int(request.form.get("category_id"))
 
         image_file = request.files.get("image")
-        if image_file:
-            filename = secure_filename(image_file.filename)
-            file_path = os.path.join(current_app.static_folder, "uploads", filename)
-            os.makedirs(os.path.dirname(file_path), exist_ok=True)
-            image_file.save(file_path)
-            product.image = filename
+        if image_file and image_file.filename:
+            try:
+                filename, cloudinary_url = _store_product_image(image_file)
+                product.image = filename
+                product.cloudinary_url = cloudinary_url
+            except ValueError as e:
+                flash(str(e))
+                return redirect(url_for("main.edit_product", product_id=product_id))
+            except Exception as e:
+                flash(f"Error saving file: {str(e)}")
+                return redirect(url_for("main.edit_product", product_id=product_id))
         db.session.commit()
         flash("Product updated successfully!")
         return redirect(url_for("main.admin_products"))
@@ -500,3 +549,25 @@ def delete_user(user_id):
         flash(f"Error deleting user: {str(e)}")
     
     return redirect(url_for("main.admin_users"))  
+@main.route('/test-upload', methods=['GET', 'POST'])
+def test_upload():
+    from flask import request, flash, redirect, url_for, render_template_string
+    
+    if request.method == 'POST':
+        file = request.files.get('image')
+        
+        if file and file.filename:
+            try:
+                upload_result = cloudinary.uploader.upload(file, folder="test-uploads")
+                cloudinary_url = upload_result['secure_url']
+                return f"✅ Success! Image URL: <a href='{cloudinary_url}' target='_blank'>{cloudinary_url}</a><br><br><a href='/test-upload'>Try another</a>"
+            except Exception as e:
+                return f"❌ Error: {str(e)}"
+    
+    # Simple HTML form
+    return '''
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="image" accept="image/*" required>
+        <button type="submit">Test Upload to Cloudinary</button>
+    </form>
+    '''

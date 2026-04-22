@@ -74,6 +74,7 @@ def create_app():
         db.create_all()
         try:
             _ensure_column_exists("product", "image", "image VARCHAR(200)")
+            _ensure_column_exists("product", "cloudinary_url", "cloudinary_url VARCHAR(300)")
             _ensure_column_exists("product", "category_id", "category_id INTEGER")
         except Exception as e:
             print(f"Schema sync warning: {e}")
