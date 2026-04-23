@@ -621,8 +621,8 @@
         <div class="product-grid">
             {% for product in products[:6] %}
             <div class="product-card">
-                {% if product.image %}
-                <img src="{{ url_for('static', filename='uploads/' + product.image) }}" alt="{{ product.name }}" class="product-image">
+                {% if product.cloudinary_url or product.image %}
+                <img src="{{ product.cloudinary_url or url_for('static', filename='uploads/' ~ product.image) }}" alt="{{ product.name }}" class="product-image">
                 {% else %}
                 <i class="fas fa-cube product-icon"></i>
                 {% endif %}
