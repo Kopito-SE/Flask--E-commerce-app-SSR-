@@ -249,18 +249,6 @@
                        title="Please enter a 6-digit numeric code">
             </div>
 
-            <!-- Flash Messages - Maintains original functionality -->
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category if category else 'warning' }}">
-                            <i class="bi bi-{% if category == 'success' %}check-circle{% elif category == 'danger' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-
             <button type="submit" class="btn-verify" id="verifyBtn">
                 <i class="bi bi-envelope-check"></i> Verify Email
             </button>

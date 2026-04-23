@@ -2,28 +2,30 @@
 
 // Flash message auto-hide
 document.addEventListener('DOMContentLoaded', function() {
-    // Auto-hide flash messages after 5 seconds
     const flashMessages = document.querySelectorAll('.flash-message');
-    flashMessages.forEach(message => {
-        setTimeout(() => {
-            message.style.animation = 'slideOut 0.3s ease';
-            setTimeout(() => {
-                message.remove();
-            }, 300);
-        }, 5000);
-    });
 
-    // Add slide out animation
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes slideOut {
-            to {
-                transform: translateY(-100%);
-                opacity: 0;
-            }
+    const dismissMessage = (message) => {
+        if (!message || message.classList.contains('is-hiding')) return;
+        message.classList.add('is-hiding');
+        setTimeout(() => message.remove(), 260);
+    };
+
+    flashMessages.forEach((message) => {
+        const closeButton = message.querySelector('[data-flash-close], .flash-close, .btn-close');
+        if (closeButton) {
+            closeButton.addEventListener('click', () => dismissMessage(message));
         }
-    `;
-    document.head.appendChild(style);
+
+        let autoHideTimer = setTimeout(() => dismissMessage(message), 6000);
+
+        message.addEventListener('mouseenter', () => {
+            clearTimeout(autoHideTimer);
+        });
+
+        message.addEventListener('mouseleave', () => {
+            autoHideTimer = setTimeout(() => dismissMessage(message), 3000);
+        });
+    });
 });
 
 // Utility functions

@@ -1,6 +1,7 @@
 ﻿import os
 
 from flask import Blueprint, current_app, flash, redirect, render_template, request, session, url_for, jsonify
+from sqlalchemy.exc import IntegrityError
 from werkzeug.utils import secure_filename
 
 from .. import db
@@ -458,9 +459,26 @@ def delete_product(product_id):
         return redirect(url_for("main.home"))
 
     product = Product.query.get_or_404(product_id)
-    db.session.delete(product)
-    db.session.commit()
-    flash("Product deleted successfully!")
+    product_name = product.name
+
+    # Preserve order history by preventing hard delete of products in past orders.
+    if OrderItem.query.filter_by(product_id=product.id).first():
+        flash("This product cannot be deleted because it exists in customer orders. You can edit it instead.")
+        return redirect(url_for("main.admin_products"))
+
+    try:
+        # Remove product from active carts first to avoid FK violations on delete.
+        CartItem.query.filter_by(product_id=product.id).delete(synchronize_session=False)
+        db.session.delete(product)
+        db.session.commit()
+        flash(f"Product '{product_name}' deleted successfully!")
+    except IntegrityError:
+        db.session.rollback()
+        flash("Unable to delete product due to related records.")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error deleting product: {str(e)}")
+
     return redirect(url_for("main.admin_products"))
 
 @main.route("/admin/dashboard")

@@ -1,0 +1,36 @@
+<div class="flash-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                {% set raw_category = (category or "info")|lower %}
+                {% set text = (message|string)|lower %}
+
+                {% if raw_category in ["success", "warning", "info"] %}
+                    {% set tone = raw_category %}
+                {% elif raw_category in ["error", "danger"] %}
+                    {% set tone = "error" %}
+                {% elif "error" in text or "invalid" in text or "unable" in text or "cannot" in text or "failed" in text %}
+                    {% set tone = "error" %}
+                {% elif "success" in text or "added" in text or "updated" in text or "deleted" in text or "placed" in text or "verified" in text or "logged out" in text %}
+                    {% set tone = "success" %}
+                {% elif "required" in text or "please login" in text or "already" in text or "empty" in text or "privileges" in text or "privillages" in text %}
+                    {% set tone = "warning" %}
+                {% else %}
+                    {% set tone = "info" %}
+                {% endif %}
+
+                <div class="flash-message flash-{{ tone }}" role="alert" aria-live="assertive">
+                    <span class="flash-icon" aria-hidden="true">
+                        {% if tone == "success" %}✓
+                        {% elif tone == "error" %}!
+                        {% elif tone == "warning" %}⚠
+                        {% else %}i
+                        {% endif %}
+                    </span>
+                    <span class="flash-text">{{ message }}</span>
+                    <button class="flash-close" type="button" data-flash-close aria-label="Dismiss message">&times;</button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
