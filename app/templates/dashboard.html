@@ -51,6 +51,54 @@
         animation: fadeIn 0.6s ease-out;
     }
 
+    .dashboard-nav {
+        background: var(--light-color);
+        border: 1px solid var(--gray-200);
+        border-radius: 16px;
+        padding: 14px;
+        margin-bottom: 28px;
+        box-shadow: var(--shadow-md);
+        position: sticky;
+        top: 86px;
+        z-index: 20;
+        backdrop-filter: blur(6px);
+    }
+
+    .dashboard-nav-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .dashboard-nav-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        border: 1px solid var(--gray-300);
+        color: var(--text-primary);
+        background: var(--gray-100);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.92rem;
+        transition: all 0.25s ease;
+    }
+
+    .dashboard-nav-link:hover {
+        transform: translateY(-2px);
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        background: #eef2ff;
+    }
+
+    .dashboard-nav-link.active {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border-color: transparent;
+        color: white;
+        box-shadow: 0 6px 18px rgba(67, 97, 238, 0.35);
+    }
+
     @keyframes fadeIn {
         from {
             opacity: 0;
@@ -463,6 +511,16 @@
             flex-direction: column;
         }
 
+        .dashboard-nav {
+            top: 76px;
+            padding: 12px;
+        }
+
+        .dashboard-nav-link {
+            width: 100%;
+            justify-content: center;
+        }
+
         .btn-primary, .btn-outline, .btn-danger {
             width: 100%;
             justify-content: center;
@@ -495,7 +553,7 @@
     }
 </style>
 
-<div class="dashboard-container">
+<div class="dashboard-container" id="dashboard-overview">
     <!-- Welcome Section -->
     <div class="welcome-section">
         <h1>
@@ -504,6 +562,37 @@
         </h1>
         <p>Manage your orders, track deliveries, and discover new products</p>
     </div>
+
+    <nav class="dashboard-nav" aria-label="Dashboard Navigation">
+        <div class="dashboard-nav-links">
+            <a href="{{ url_for('main.dashboard') }}" class="dashboard-nav-link active">
+                <i class="fas fa-table-columns"></i>
+                Dashboard
+            </a>
+            <a href="#quick-actions" class="dashboard-nav-link">
+                <i class="fas fa-bolt"></i>
+                Actions
+            </a>
+            <a href="#recent-orders" class="dashboard-nav-link">
+                <i class="fas fa-clock-rotate-left"></i>
+                Recent Orders
+            </a>
+            <a href="#featured-products" class="dashboard-nav-link">
+                <i class="fas fa-star"></i>
+                Products
+            </a>
+            <a href="{{ url_for('main.home') }}" class="dashboard-nav-link">
+                <i class="fas fa-house"></i>
+                Home
+            </a>
+            {% if user.role == 'admin' %}
+            <a href="{{ url_for('main.admin_dashboard') }}" class="dashboard-nav-link">
+                <i class="fas fa-chart-line"></i>
+                Admin
+            </a>
+            {% endif %}
+        </div>
+    </nav>
     
     <!-- Stats Cards -->
     <div class="dashboard-stats">
@@ -537,7 +626,7 @@
     </div>
     
     <!-- Quick Actions -->
-    <div class="quick-actions">
+    <div class="quick-actions" id="quick-actions">
         <h2>
             <i class="fas fa-bolt"></i>
             Quick Actions
@@ -565,7 +654,7 @@
     </div>
     
     <!-- Recent Orders Section -->
-    <div class="orders-section">
+    <div class="orders-section" id="recent-orders">
         <h2>
             <i class="fas fa-clock"></i>
             Recent Orders
@@ -613,7 +702,7 @@
     </div>
     
     <!-- Products Section -->
-    <div class="products-section">
+    <div class="products-section" id="featured-products">
         <h2>
             <i class="fas fa-star"></i>
             Featured Products

@@ -303,6 +303,12 @@
                         </li>
                         {% if current_user %}
                             <li class="nav-item-modern">
+                                <a class="nav-link-modern" href="/dashboard">
+                                    <i class="fas fa-gauge-high"></i>
+                                    My Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item-modern">
                                 <a class="nav-link-modern" href="/">
                                     <i class="fas fa-box-open"></i>
                                     Products
@@ -398,6 +404,12 @@
                         </a>
                     </li>
                     {% if current_user %}
+                        <li class="nav-item-modern w-100">
+                            <a class="nav-link-modern" href="/dashboard">
+                                <i class="fas fa-gauge-high"></i>
+                                My Dashboard
+                            </a>
+                        </li>
                         <li class="nav-item-modern w-100">
                             <a class="nav-link-modern" href="/">
                                 <i class="fas fa-box-open"></i>
@@ -523,6 +535,7 @@
                         <li class="mb-2"><a href="/" class="text-secondary text-decoration-none hover-text-primary">Home</a></li>
                         <li class="mb-2"><a href="/" class="text-secondary text-decoration-none hover-text-primary">Products</a></li>
                         {% if current_user %}
+                            <li class="mb-2"><a href="/dashboard" class="text-secondary text-decoration-none hover-text-primary">My Dashboard</a></li>
                             <li class="mb-2"><a href="/orders" class="text-secondary text-decoration-none hover-text-primary">My Orders</a></li>
                         {% endif %}
                     </ul>
