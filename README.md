@@ -2,6 +2,10 @@
 
 Kopito Web Store is a Flask-based e-commerce project with user registration, email verification, product management, cart checkout, and an admin dashboard.
 
+##Live deployments
+
+https://flask-server-side-rendering-application.onrender.com/
+
 ## Features
 
 - User registration and login
